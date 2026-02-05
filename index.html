@@ -63,11 +63,11 @@
   <main id="viewer"></main>
 
   <!-- PDF.js from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     // PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.js";
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     const viewer = document.getElementById("viewer");
     const pdfUrlInput = document.getElementById("pdfUrl");
@@ -182,3 +182,4 @@
   </script>
 </body>
 </html>
+
