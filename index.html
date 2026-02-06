@@ -29,9 +29,7 @@
     }
 
     /* Lock page scroll when menu is open (prevents giant scrollbars) */
-    body.menu-open{
-      overflow: hidden;
-    }
+    body.menu-open{ overflow: hidden; }
 
     /* ================= HEADER ================= */
 
@@ -187,15 +185,18 @@
       backdrop-filter: none;
       opacity: 1;
 
-      overflow: hidden; /* important: prevents horizontal/vertical scrollbars */
+      overflow: hidden; /* keep everything clean */
     }
     body.menu-open .overlay{ display:block; }
 
     .overlayBackdrop{
       position:absolute;
       inset:0;
+      z-index: 0;
     }
 
+    /* IMPORTANT: allow overlayMenu to extend full height, but do NOT hide overflow here
+       so the artwork can be visible. The art area will handle its own cropping. */
     .overlayMenu{
       position: relative;
       z-index: 1;
@@ -208,8 +209,8 @@
       flex-direction:column;
       gap: 28px;
 
-      height: 100vh;      /* full screen */
-      overflow: hidden;   /* keeps artwork crop inside overlay */
+      min-height: 100vh;
+      overflow: visible;
     }
 
     .menuItem{
@@ -223,7 +224,7 @@
       color: #fff;
       display:inline-block;
       width: 100%;
-      z-index: 2;         /* ensure clicks stay above art */
+      z-index: 2; /* above artwork */
     }
 
     .menuItemTitle{
@@ -247,35 +248,37 @@
       opacity: 1;
     }
 
-    /* ================= ARTWORK (FULL SCREEN, NO SCROLL, CUTS BOTTOM SLIGHTLY) ================= */
+    /* ================= ARTWORK (SHOWS ON WEB + MOBILE, FULL WIDTH, CROPS BOTTOM A BIT) ================= */
 
-    /* Artwork is now pinned to the bottom of the overlay.
-       Put the file in the SAME folder as index.html: menu-art.png */
+    /* This block lives INSIDE overlayMenu.
+       It is positioned relative so we can move it up/down without affecting page scroll. */
     .menuArtArea{
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      position: relative;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
 
-      height: 60vh;          /* “art zone” height */
+      /* Scoot artwork UP closer to the tabs (negative pulls it upward) */
+      margin-top: -10px;
+
+      height: 58vh;          /* area reserved for the art */
+      overflow: hidden;      /* clean crop (no fade) */
       pointer-events: none;
-      overflow: hidden;      /* crops bottom/edges cleanly */
       z-index: 1;
     }
 
     .menuArt{
       position: absolute;
       left: 50%;
-      top: 0;                /* keep TOP of the artwork visible */
+      top: 0;                /* keep TOP of artwork visible */
       transform: translateX(-50%);
 
-      width: 200vw;          /* span the full screen (wider than viewport) */
-      height: 82vh;          /* tall enough to spill down */
+      width: 200vw;          /* guarantees full bleed on desktop */
+      height: 90vh;          /* tall enough so bottom can be cropped */
       object-fit: cover;
       object-position: top center;
 
-      /* This is the "cut off at bottom slightly" knob */
-      margin-bottom: -60px;  /* increase magnitude for more bottom cut */
+      /* bottom crop control (negative = crop more bottom) */
+      margin-bottom: -70px;
 
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
@@ -361,12 +364,15 @@
         font-size: clamp(44px, 10vw, 72px);
       }
 
-      /* Mobile art: slightly smaller & a bit less “bottom cut” */
-      .menuArtArea{ height: 58vh; }
+      /* MOBILE: move artwork UP (more negative) and keep it slightly smaller */
+      .menuArtArea{
+        height: 52vh;
+        margin-top: -32px;  /* <-- this is the main “scoot up on mobile” knob */
+      }
       .menuArt{
         width: 170vw;
-        height: 72vh;
-        margin-bottom: -40px;
+        height: 76vh;
+        margin-bottom: -55px;
       }
     }
   </style>
@@ -413,7 +419,7 @@
         <div class="menuItemTitle">Glass Manual</div>
       </button>
 
-      <!-- Artwork (pinned to bottom, no scrolling) -->
+      <!-- Artwork -->
       <div class="menuArtArea" aria-hidden="true">
         <img class="menuArt" src="menu-art.png" alt="">
       </div>
