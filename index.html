@@ -19,6 +19,9 @@
       --muted: rgba(0,0,0,0.55);
       --border: rgba(0,0,0,0.10);
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+
+      --menu-bg: #EE6055;
+      --menu-text: #ffffff;
     }
 
     body{
@@ -128,8 +131,8 @@
     .menuBtn{
       appearance:none;
       background: transparent;
-      border: none;          /* removed circle */
-      border-radius: 0;      /* removed circle */
+      border: none;
+      border-radius: 0;
       width: 34px;
       height: 28px;
       display:inline-flex;
@@ -154,11 +157,16 @@
       height:2px;
       background: rgba(0,0,0,0.75);
       border-radius: 2px;
-      transition: transform 160ms ease, top 160ms ease, opacity 160ms ease;
+      transition: transform 160ms ease, top 160ms ease, opacity 160ms ease, background 160ms ease;
     }
     .menuIcon span:nth-child(1){ top: 1px; }
     .menuIcon span:nth-child(2){ top: 7px; }
     .menuIcon span:nth-child(3){ top: 13px; }
+
+    /* When menu is open, make hamburger/X white for contrast */
+    body.menu-open .menuIcon span{
+      background: rgba(255,255,255,0.95);
+    }
 
     body.menu-open .menuIcon span:nth-child(1){
       top: 7px;
@@ -179,8 +187,7 @@
       inset: 0;
       z-index: 999;
       display:none;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(14px);
+      background: var(--menu-bg);
     }
     body.menu-open .overlay{ display:block; }
 
@@ -199,7 +206,7 @@
       padding: 90px 0 40px;
       display:flex;
       flex-direction:column;
-      gap: 28px; /* more spacing */
+      gap: 28px;
     }
 
     .menuItem{
@@ -211,14 +218,15 @@
       padding: 0;
 
       font-family: var(--font);
-      color: var(--text);
+      color: var(--menu-text);
     }
 
     .menuItemTitle{
       font-weight: 700;
-      font-size: clamp(52px, 7.5vw, 96px); /* bigger */
+      font-size: clamp(52px, 7.5vw, 96px);
       line-height: 1.02;
       letter-spacing: -0.6px;
+      color: var(--menu-text);
     }
 
     .menuItem:hover .menuItemTitle{
@@ -307,7 +315,7 @@
       }
 
       .menuItemTitle{
-        font-size: clamp(44px, 10vw, 72px); /* big on mobile too */
+        font-size: clamp(44px, 10vw, 72px);
       }
     }
   </style>
