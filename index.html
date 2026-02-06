@@ -238,14 +238,15 @@
       opacity: 1;
     }
 
-    /* ================= ARTWORK ================= */
+    /* ================= ARTWORK (DESKTOP: FULL-WIDTH, SLIGHT BOTTOM CROP) ================= */
 
     .menuArtArea{
       width: 100vw;
       margin-left: calc(50% - 50vw);
-      margin-top: 10px;
+      margin-top: 6px;
 
-      height: 68vh;
+      /* keep a consistent area, but allow the image to overflow */
+      height: 56vh;
       overflow: visible;
       position: relative;
       pointer-events: none;
@@ -255,16 +256,19 @@
       position: absolute;
       left: 50%;
 
-      /* scoot UP a bit more on web */
-      top: -170px;
+      /* anchor to bottom so it crops at bottom slightly */
+      bottom: -80px; /* increase (more negative) = more bottom cut */
 
       transform: translateX(-50%);
 
-      /* stretch wider across screen on web */
-      width: 160vw;
-      height: 95vh;
+      /* make it super wide so it spans the whole screen */
+      width: 200vw;
+      height: 80vh;
 
-      object-fit: contain;
+      /* cover ensures it fills the width */
+      object-fit: cover;
+
+      /* keep top visible (stars etc) while still cropping bottom */
       object-position: top center;
 
       filter: brightness(0) invert(1);
@@ -356,9 +360,16 @@
       }
 
       .menuArt{
+        /* keep your mobile sizing */
         width: 130vw;
         height: 90vh;
+
+        /* scoot UP on mobile */
         top: -90px;
+        bottom: auto;
+
+        object-fit: cover;
+        object-position: top center;
 
         /* keep your mobile nudge-right */
         transform: translateX(calc(-50% + 24px));
