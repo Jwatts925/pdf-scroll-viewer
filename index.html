@@ -251,13 +251,15 @@
 
     /* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
     
+/* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
+
     .menuArtArea{
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
       
-      height: 60vh;          /* artwork display zone height */
+      height: 65vh;          /* artwork display zone height */
       pointer-events: none;
       overflow: hidden;      /* crops the bleed areas */
       z-index: 1;
@@ -266,19 +268,18 @@
     .menuArt{
       position: absolute;
       left: 50%;
-      top: 0;                /* anchor to TOP to keep skull fully visible */
+      bottom: -5%;           /* push down 5% to bleed past bottom */
       transform: translateX(-50%);
       
       width: 110vw;          /* 100vw + 5% left + 5% right = 110vw total */
-      height: auto;          /* maintain aspect ratio */
-      min-height: 105%;      /* ensures it bleeds 5% past bottom of container */
+      height: 75vh;          /* make it tall enough to fill the space */
       
       object-fit: cover;     /* scales to cover the area */
-      object-position: center top;  /* keeps top visible, crops bottom */
+      object-position: center center;  /* center the skull */
     
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
-    }
+    }  
 
     /* ================= LOADING BAR ================= */
 
@@ -359,13 +360,15 @@
 
       /* Mobile art adjustments */
       
+      /* Mobile art adjustments */
       .menuArtArea{ 
-        height: 55vh;        /* slightly smaller container on mobile */
+        height: 60vh;        /* artwork zone on mobile */
       }
       .menuArt{
         width: 110vw;        /* same 5% bleed on mobile */
-        min-height: 105%;    /* same 5% bottom bleed on mobile */
-      }  
+        height: 70vh;        /* tall enough for mobile */
+        bottom: -5%;         /* same 5% bottom bleed */
+      } 
     }
   </style>
 </head>
@@ -636,4 +639,5 @@
   </script>
 </body>
 </html>
+
 
