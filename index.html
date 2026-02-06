@@ -117,7 +117,7 @@
       outline: none;
     }
 
-    /* Right: menu button */
+    /* Right: menu button (NO circle) */
     .right{
       display:flex;
       align-items:center;
@@ -128,10 +128,10 @@
     .menuBtn{
       appearance:none;
       background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      width: 40px;
-      height: 34px;
+      border: none;          /* removed circle */
+      border-radius: 0;      /* removed circle */
+      width: 34px;
+      height: 28px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -139,14 +139,13 @@
       padding:0;
     }
     .menuBtn:hover{
-      border-color: rgba(0,0,0,0.18);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      opacity: 0.7;
     }
 
     .menuIcon{
       position: relative;
-      width: 18px;
-      height: 14px;
+      width: 22px;
+      height: 16px;
     }
     .menuIcon span{
       position:absolute;
@@ -158,18 +157,18 @@
       transition: transform 160ms ease, top 160ms ease, opacity 160ms ease;
     }
     .menuIcon span:nth-child(1){ top: 1px; }
-    .menuIcon span:nth-child(2){ top: 6px; }
-    .menuIcon span:nth-child(3){ top: 11px; }
+    .menuIcon span:nth-child(2){ top: 7px; }
+    .menuIcon span:nth-child(3){ top: 13px; }
 
     body.menu-open .menuIcon span:nth-child(1){
-      top: 6px;
+      top: 7px;
       transform: rotate(45deg);
     }
     body.menu-open .menuIcon span:nth-child(2){
       opacity: 0;
     }
     body.menu-open .menuIcon span:nth-child(3){
-      top: 6px;
+      top: 7px;
       transform: rotate(-45deg);
     }
 
@@ -185,24 +184,22 @@
     }
     body.menu-open .overlay{ display:block; }
 
-    /* Clickable backdrop closes */
     .overlayBackdrop{
       position:absolute;
       inset:0;
     }
 
-    /* Big menu list */
     .overlayMenu{
       position: relative;
       z-index: 1;
 
-      width: min(1200px, 92vw);
+      width: min(1400px, 92vw);
       margin: 0 auto;
 
-      padding: 90px 0 40px; /* pushes content down a bit */
+      padding: 90px 0 40px;
       display:flex;
       flex-direction:column;
-      gap: 22px;
+      gap: 28px; /* more spacing */
     }
 
     .menuItem{
@@ -219,30 +216,21 @@
 
     .menuItemTitle{
       font-weight: 700;
-      font-size: clamp(40px, 6.5vw, 80px);
+      font-size: clamp(52px, 7.5vw, 96px); /* bigger */
       line-height: 1.02;
-      letter-spacing: -0.4px;
+      letter-spacing: -0.6px;
     }
 
     .menuItem:hover .menuItemTitle{
       text-decoration: underline;
-      text-decoration-thickness: 3px;
-      text-underline-offset: 8px;
+      text-decoration-thickness: 4px;
+      text-underline-offset: 10px;
     }
 
-    /* subtle sublabel under each */
-    .menuItemSub{
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 400;
-    }
-
-    /* show which is selected */
     .menuItem[aria-selected="true"] .menuItemTitle{
       text-decoration: underline;
-      text-decoration-thickness: 3px;
-      text-underline-offset: 10px;
+      text-decoration-thickness: 4px;
+      text-underline-offset: 12px;
     }
 
     /* ================= LOADING BAR ================= */
@@ -311,15 +299,16 @@
     @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
-      .menuBtn{ width: 38px; height: 32px; }
       #topSpacer{ height: 14px; }
 
-      /* Slightly tighter menu spacing on small screens */
       .overlayMenu{
         padding-top: 72px;
-        gap: 18px;
+        gap: 22px;
       }
-      .menuItemSub{ font-size: 12px; }
+
+      .menuItemTitle{
+        font-size: clamp(44px, 10vw, 72px); /* big on mobile too */
+      }
     }
   </style>
 </head>
@@ -353,17 +342,14 @@
     <div class="overlayMenu" aria-label="Document tabs">
       <button class="menuItem" aria-selected="true" data-pdf="resume.pdf">
         <div class="menuItemTitle">Resume</div>
-        <div class="menuItemSub">Tap to view</div>
       </button>
 
       <button class="menuItem" aria-selected="false" data-pdf="portfolio.pdf">
         <div class="menuItemTitle">Portfolio</div>
-        <div class="menuItemSub">Tap to view</div>
       </button>
 
       <button class="menuItem" aria-selected="false" data-pdf="glass-construction-manual.pdf">
         <div class="menuItemTitle">Glass Manual</div>
-        <div class="menuItemSub">Tap to view</div>
       </button>
     </div>
   </div>
@@ -505,8 +491,6 @@
       document.body.classList.add("menu-open");
       menuBtn.setAttribute("aria-expanded", "true");
       menuBtn.setAttribute("aria-label", "Close menu");
-
-      // Keep header visible while menu open
       document.body.classList.remove("top-hidden");
     }
 
@@ -551,7 +535,6 @@
       const y = window.scrollY;
       const delta = y - lastY;
 
-      // If menu is open, keep header visible
       if (document.body.classList.contains("menu-open")){
         document.body.classList.remove("top-hidden");
         lastY = y;
