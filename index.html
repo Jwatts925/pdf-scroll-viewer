@@ -290,13 +290,15 @@
       left: 50%;
     
       /* push it LOWER (more on big screens below via media query) */
-      bottom: -50vh;
+      bottom: -20vh;
     
       transform: translateX(-50%);
     
       /* make it physically big so it fills the lower region */
       width: 100vw;
       height: auto;
+      max-height: 58vh; /* default */
+
     
       /* IMPORTANT: no top crop */
       object-fit: contain;
@@ -308,6 +310,14 @@
       -webkit-mask-image: none !important;
       mask-image: none !important;
 }
+    /* Full-screen / wide desktop: keep it shorter */
+      @media (min-width: 1200px){
+        .menuArt{
+          max-height: 46vh;
+          bottom: -24vh; /* push it lower on big screens */
+        }
+      }
+
 
 
     /* Optional: ensure the art never covers clicks (already pointer-events:none on area) */
@@ -668,6 +678,7 @@
   </script>
 </body>
 </html>
+
 
 
 
