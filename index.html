@@ -15,23 +15,13 @@
       --page-gap: 18px;
       --bg: #ffffff;
       --page-bg: #ffffff;
-
       --text: #111;
       --muted: rgba(0,0,0,0.55);
       --border: rgba(0,0,0,0.10);
-
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
-      /* ===== HEADER: WHITE (BLACK TEXT) ===== */
-      --top-bg: #ffffff;
-      --top-text: #111111;
-      --top-muted: rgba(0,0,0,0.65);
-      --top-border: rgba(0,0,0,0.12);
-      --hamburger: rgba(0,0,0,0.85);
-
-      /* ===== MENU OVERLAY: BLACK + WHITE TEXT ===== */
-      --overlay-bg: #000000;
-      --overlay-text: #ffffff;
+      --menu-bg: #000;      /* overlay background */
+      --menu-text: #fff;    /* overlay text */
     }
 
     body{
@@ -54,10 +44,9 @@
       gap: 16px;
 
       padding: 12px 14px;
-
-      background: var(--top-bg);
-      border-bottom: 1px solid var(--top-border);
-      backdrop-filter: none;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
 
     header,
@@ -70,6 +59,7 @@
       transform: translateY(-120%);
     }
 
+    /* Left cluster: Brand + divider + Download */
     .left{
       display:flex;
       align-items:baseline;
@@ -88,19 +78,18 @@
     .brand .title{
       font-weight:700;
       font-size:16px;
-      letter-spacing: 2px;
-      color: var(--top-text);
+      letter-spacing: 0.4px; /* keep your title kerning */
     }
     .brand .sub{
       font-size:12px;
+      color: var(--muted);
       font-weight: 400;
-      color: var(--top-muted);
     }
 
     .divider{
       width:1px;
       height:18px;
-      background: rgba(0,0,0,0.22);
+      background: rgba(0,0,0,0.18);
       align-self:center;
       flex: 0 0 auto;
     }
@@ -117,20 +106,21 @@
       white-space:nowrap;
       cursor:pointer;
 
-      color: var(--top-text) !important;
-      -webkit-text-fill-color: var(--top-text);
+      color: var(--text) !important;
+      -webkit-text-fill-color: var(--text);
       font-family: var(--font);
     }
     .download:visited,
     .download:hover,
     .download:active,
     .download:focus{
-      color: var(--top-text) !important;
-      -webkit-text-fill-color: var(--top-text);
+      color: var(--text) !important;
+      -webkit-text-fill-color: var(--text);
       text-decoration: underline;
       outline: none;
     }
 
+    /* Right: menu button (NO circle) */
     .right{
       display:flex;
       align-items:center;
@@ -151,7 +141,9 @@
       cursor:pointer;
       padding:0;
     }
-    .menuBtn:hover{ opacity: 0.85; }
+    .menuBtn:hover{
+      opacity: 0.7;
+    }
 
     .menuIcon{
       position: relative;
@@ -163,7 +155,7 @@
       left:0;
       right:0;
       height:2px;
-      background: var(--hamburger);
+      background: rgba(0,0,0,0.75);
       border-radius: 2px;
       transition: transform 160ms ease, top 160ms ease, opacity 160ms ease;
     }
@@ -171,19 +163,29 @@
     .menuIcon span:nth-child(2){ top: 7px; }
     .menuIcon span:nth-child(3){ top: 13px; }
 
-    body.menu-open .menuIcon span:nth-child(1){ top: 7px; transform: rotate(45deg); }
-    body.menu-open .menuIcon span:nth-child(2){ opacity: 0; }
-    body.menu-open .menuIcon span:nth-child(3){ top: 7px; transform: rotate(-45deg); }
+    body.menu-open .menuIcon span:nth-child(1){
+      top: 7px;
+      transform: rotate(45deg);
+    }
+    body.menu-open .menuIcon span:nth-child(2){
+      opacity: 0;
+    }
+    body.menu-open .menuIcon span:nth-child(3){
+      top: 7px;
+      transform: rotate(-45deg);
+    }
 
-    /* ================= FULLSCREEN OVERLAY (MENU) ================= */
+    /* ================= FULLSCREEN OVERLAY (BIG MENU) ================= */
 
     .overlay{
       position: fixed;
       inset: 0;
       z-index: 999;
       display:none;
-      background: var(--overlay-bg);
-      backdrop-filter: none; /* opaque */
+
+      /* OPAQUE (no transparency) */
+      background: var(--menu-bg);
+      backdrop-filter: none;
     }
     body.menu-open .overlay{ display:block; }
 
@@ -194,12 +196,12 @@
 
     .overlayMenu{
       position: relative;
-      z-index: 1;
+      z-index: 2;
 
       width: min(1400px, 92vw);
       margin: 0 auto;
 
-      padding: 90px 0 40px;
+      padding: 90px 0 0;
       display:flex;
       flex-direction:column;
       gap: 28px;
@@ -214,62 +216,89 @@
       padding: 0;
 
       font-family: var(--font);
-      color: var(--overlay-text);
-      letter-spacing: 3px;
-
-      opacity: 0.92;
-      transform: scale(1);
-      transition: transform 160ms ease, opacity 160ms ease;
+      color: var(--menu-text);
     }
 
     .menuItemTitle{
-      font-weight: 500;
+      font-weight: 700;
       font-size: clamp(52px, 7.5vw, 96px);
       line-height: 1.02;
-      letter-spacing: 3px;
-      color: var(--overlay-text);
-      transition: font-weight 160ms ease;
+
+      /* kerning / tracking for the menu titles */
+      letter-spacing: 0.06em;
     }
 
-    /* POP on hover + selected */
-    .menuItem:hover{
-      transform: scale(1.03);
-      opacity: 1;
-    }
+    /* “Scale + weight” pop (no underline) */
     .menuItem:hover .menuItemTitle{
-      font-weight: 700;
-    }
-
-    .menuItem[aria-selected="true"]{
       transform: scale(1.03);
-      opacity: 1;
+      transform-origin: left center;
+      font-weight: 800;
     }
+
     .menuItem[aria-selected="true"] .menuItemTitle{
-      font-weight: 700;
+      transform: scale(1.03);
+      transform-origin: left center;
+      font-weight: 800;
     }
 
-    /* ===== Menu artwork area ===== */
-    .menuArtWrap{
-      margin-top: 22px;
-      padding-top: 10px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
+    /* ================= MENU ART (FULL WIDTH, FADE EDGES/BOTTOM) ================= */
+
+    .menuArtArea{
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      height: 48vh;          /* controls how tall the bottom art zone is */
+      z-index: 1;            /* behind menu text */
+      pointer-events: none;
+      overflow: hidden;
     }
 
-    .menuArt{
-      width: min(900px, 92vw);
-      max-height: 38vh;
-      object-fit: contain;
-      opacity: 0.95;
+    .menuArtArea img{
+      position: absolute;
+      left: 50%;
+      bottom: -2vh;          /* tuck slightly off bottom to feel “anchored” */
+      transform: translateX(-50%);
 
-      /* Try to force white outlines (best for dark/outline art PNG/SVG) */
+      /* Make it span wide */
+      width: min(1700px, 120vw);
+      height: auto;
+      max-height: 60vh;
+
+      opacity: 0.92;
+
+      /* If your art is dark linework, this makes it white */
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
     }
 
-    /* Optional: if your art is already white, you can disable the filter:
-       .menuArt{ filter:none; -webkit-filter:none; } */
+    /* Fade out to left/right */
+    .menuArtArea::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(to right,
+          var(--menu-bg) 0%,
+          rgba(0,0,0,0) 18%,
+          rgba(0,0,0,0) 82%,
+          var(--menu-bg) 100%);
+      /* For non-black menu colors later, keep this in sync by using var(--menu-bg) above */
+      pointer-events:none;
+    }
+
+    /* Fade out to bottom */
+    .menuArtArea::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height: 42%;
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,0) 0%,
+        var(--menu-bg) 100%);
+      pointer-events:none;
+    }
 
     /* ================= LOADING BAR ================= */
 
@@ -293,6 +322,7 @@
       transition: width 180ms ease;
     }
 
+    /* ================= SPACER ================= */
     #topSpacer{ height: 18px; }
 
     /* ================= PDF VIEWER ================= */
@@ -332,6 +362,7 @@
       100%{ background-position: -200% 0; }
     }
 
+    /* Mobile tweaks */
     @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
@@ -344,11 +375,16 @@
 
       .menuItemTitle{
         font-size: clamp(44px, 10vw, 72px);
-        letter-spacing: 3px;
+        letter-spacing: 0.06em;
       }
 
-      .menuArt{
-        max-height: 28vh;
+      .menuArtArea{
+        height: 52vh;
+      }
+
+      .menuArtArea img{
+        width: 140vw;      /* a little wider on mobile */
+        max-height: 58vh;
       }
     }
   </style>
@@ -376,27 +412,28 @@
     </div>
   </header>
 
+  <!-- Full-screen overlay menu -->
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Document menu">
     <div class="overlayBackdrop" aria-hidden="true"></div>
 
     <div class="overlayMenu" aria-label="Document tabs">
-      <button class="menuItem" aria-selected="true" data-pdf="resume.pdf">
-        <div class="menuItemTitle">Resume!!</div>
+      <button class="menuItem" aria-selected="false" data-pdf="resume.pdf">
+        <div class="menuItemTitle">Resume</div>
       </button>
 
       <button class="menuItem" aria-selected="false" data-pdf="portfolio.pdf">
-        <div class="menuItemTitle">Portfolio!!</div>
+        <div class="menuItemTitle">Portfolio</div>
       </button>
 
-      <button class="menuItem" aria-selected="false" data-pdf="glass-construction-manual.pdf">
-        <div class="menuItemTitle">Glass Manual!!</div>
+      <button class="menuItem" aria-selected="true" data-pdf="glass-construction-manual.pdf">
+        <div class="menuItemTitle">Glass Manual</div>
       </button>
+    </div>
 
-      <!-- ===== Artwork under the menu items =====
-           Upload a file like: menu-art.png (or .svg) into the same folder as index.html -->
-      <div class="menuArtWrap" aria-hidden="true">
-        <img class="menuArt" src="menu-art.png" alt="">
-      </div>
+    <!-- Artwork goes behind the menu, bottom of screen -->
+    <!-- Put your file in the same folder as index.html and name it: menu-art.png -->
+    <div class="menuArtArea" aria-hidden="true">
+      <img src="menu-art.png" alt="">
     </div>
   </div>
 
@@ -531,6 +568,8 @@
       }
     }
 
+    /* ================= MENU OPEN/CLOSE ================= */
+
     function openMenu(){
       document.body.classList.add("menu-open");
       menuBtn.setAttribute("aria-expanded", "true");
@@ -565,10 +604,13 @@
       });
     });
 
+    /* ================= INITIAL LOAD ================= */
+
     const startItem = document.querySelector('.menuItem[aria-selected="true"]') || menuItems[0];
     setActiveItem(startItem);
     loadPdf(startItem.dataset.pdf);
 
+    /* ================= HIDE HEADER ON SCROLL DOWN / SHOW ON SCROLL UP ================= */
     let lastY = window.scrollY;
     let ticking = false;
 
