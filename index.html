@@ -40,6 +40,14 @@ header{
   flex-wrap:wrap;
 }
 
+.divider{
+  width: 1px;
+  height: 28px;
+  background: rgba(0,0,0,0.15);
+  align-self: center;
+}
+
+  
 .brand{
   display:flex;
   flex-direction:column;
@@ -141,7 +149,12 @@ header{
 @media (max-width:640px){
   header{ flex-direction:column; gap:10px; }
   #loadingBar{ top:96px; }
+
+  .divider{
+    display: none;
+  }
 }
+
 </style>
 </head>
 
@@ -153,15 +166,18 @@ header{
     <div class="sub">2021–2026</div>
   </div>
 
-  <nav class="tabs">
+<nav class="tabs">
     <button class="tab" aria-selected="true"  data-pdf="resume.pdf">Resume</button>
     <button class="tab" aria-selected="false" data-pdf="portfolio.pdf">Portfolio</button>
     <button class="tab" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
-  </nav>
+</nav>
 
-  <a id="downloadBtn" class="download" href="resume.pdf" download>
-    Download PDF
-  </a>
+<div class="divider" aria-hidden="true"></div>
+
+<a id="downloadBtn" class="download" href="resume.pdf" download>
+  Download PDF
+</a>
+
 </header>
 
 <div id="loadingBar"><div id="loadingBarInner"></div></div>
@@ -258,3 +274,4 @@ loadPdf(startTab.dataset.pdf);
 
 </body>
 </html>
+
