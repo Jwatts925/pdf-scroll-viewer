@@ -248,35 +248,46 @@
 
     /* ================= ARTWORK (FULL WIDTH BLEED, FIXED TO VIEWPORT) ================= */
 
-    .menuArtArea{
-      position: fixed;       /* fixed to viewport */
-      left: 0;
-      right: 0;
-      bottom: 0;
-      top: 0;
+      /* LOCK SCROLL WHEN MENU IS OPEN */
+      body.menu-open{
+        overflow: hidden;
+        height: 100vh;
+      }
       
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      overflow: hidden;      /* crops bottom bleed */
-      z-index: 1;
-    }
+      /* make sure the overlay itself can't scroll */
+      .overlay{
+        overflow: hidden;
+      }
+      
+      /* ARTWORK pinned to viewport bottom, no crop */
+      .menuArtArea{
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      
+        height: 0;              /* no box to crop it */
+        pointer-events: none;
+        z-index: 0;             /* behind the menu text */
+      }
+      
+      .menuArt{
+        position: absolute;
+        left: 50%;
+        bottom: -10vh;          /* bleed past bottom (adjust this) */
+        transform: translateX(-50%);
+      
+        width: 140vw;           /* bleed past left/right (adjust this) */
+        height: auto;           /* ✅ prevents cropping */
+        max-width: none;
+      
+        object-fit: contain;    /* ✅ contain = no crop */
+        object-position: center;
+      
+        filter: brightness(0) invert(1);
+        -webkit-filter: brightness(0) invert(1);
+      }
 
-    .menuArt{
-      position: absolute;
-      left: 50%;
-      bottom: -100%;           /* bleed 5% past bottom */
-      transform: translateX(-50%) translateY(-40px);
-      
-      width: 110vw;          /* 5% bleed on each side */
-      height: 60vh;          
-      
-      object-fit: cover;     
-      object-position: center bottom;
-
-      filter: brightness(0) invert(1);
-      -webkit-filter: brightness(0) invert(1);
-    }
 
     /* ================= LOADING BAR ================= */
 
@@ -643,6 +654,7 @@
   </script>
 </body>
 </html>
+
 
 
 
