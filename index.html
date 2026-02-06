@@ -28,9 +28,9 @@
       top: 0;
       z-index: 10;
       display:flex;
-      gap:12px;
       align-items:center;
-      justify-content: center;
+      justify-content: center; /* center everything */
+      gap: 28px;
       padding:12px 14px;
       background: rgba(255,255,255,0.88);
       backdrop-filter: blur(10px);
@@ -42,6 +42,8 @@
       align-items:baseline;
       gap:10px;
       flex-wrap:wrap;
+      justify-content:flex-start;
+      white-space: nowrap;
     }
     .brand .title{
       font-weight:600;
@@ -58,7 +60,7 @@
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-      justify-content:center;
+      justify-content:center; /* center the buttons */
     }
 
     .tab{
@@ -72,6 +74,7 @@
       font-size: 13px;
       line-height: 1;
       box-shadow: none;
+      user-select: none;
     }
     .tab:hover{ border-color: rgba(0,0,0,0.18); }
     .tab[aria-selected="true"]{
@@ -80,10 +83,25 @@
       font-weight: 600;
     }
 
-    .right{
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
+    /* Loading bar (sticky under header) */
+    #loadingBar{
+      position: sticky;
+      top: 56px;          /* header height-ish; safe default */
+      z-index: 9;
+      height: 3px;
+      width: 100%;
+      background: transparent;
+      opacity: 0;
+      transition: opacity 160ms ease;
+    }
+    #loadingBar.show{ opacity: 1; }
+
+    #loadingBarInner{
+      height: 100%;
+      width: 0%;
+      background: rgba(0,0,0,0.35);
+      border-radius: 999px;
+      transition: width 180ms ease;
     }
 
     #viewer{
@@ -147,17 +165,18 @@
   <header>
     <div class="brand">
       <div class="title">James Watts’ Portfolio</div>
-      <div class="sub">2021-2026</div>
+      <div class="sub">2023–2026</div>
     </div>
 
     <nav class="tabs" aria-label="Document tabs">
-      <button class="tab" id="tab-resume" aria-selected="false" data-pdf="resume.pdf">Resume</button>
-      <button class="tab" id="tab-portfolio" aria-selected="true" data-pdf="portfolio.pdf">Portfolio</button>
-      <button class="tab" id="tab-manual" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
+      <button class="tab" aria-selected="false" data-pdf="resume.pdf">Resume</button>
+      <button class="tab" aria-selected="true"  data-pdf="portfolio.pdf">Portfolio</button>
+      <button class="tab" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
     </nav>
-
-    
   </header>
+
+  <!-- Loading bar (under the header) -->
+  <div id="loadingBar" aria-hidden="true"><div id="loadingBarInner"></div></div>
 
   <main id="viewer"></main>
   <div class="hint" id="hint"></div>
@@ -169,16 +188,37 @@
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     const viewer = document.getElementById("viewer");
-    const statusEl = document.getElementById("status") || { textContent: "" };
     const hintEl = document.getElementById("hint");
-    const tabs = Array.from(document.querySelectorAll(".tab"));
 
+    // Status element is intentionally NOT in the UI; keep this safe anyway.
+    const statusEl = document.getElementById("status") || { textContent: "" };
+
+    const loadingBar = document.getElementById("loadingBar");
+    const loadingBarInner = document.getElementById("loadingBarInner");
+
+    const tabs = Array.from(document.querySelectorAll(".tab"));
     const TARGET_RENDER_WIDTH = 1100;
 
     let currentLoadToken = 0;
     let currentObserver = null;
 
     function setStatus(msg){ statusEl.textContent = msg; }
+
+    function showLoading(){
+      loadingBar.classList.add("show");
+      loadingBarInner.style.width = "8%";
+    }
+    function setLoadingPct(pct){
+      const clamped = Math.max(0, Math.min(100, pct));
+      loadingBarInner.style.width = clamped + "%";
+    }
+    function hideLoading(){
+      setLoadingPct(100);
+      setTimeout(() => {
+        loadingBar.classList.remove("show");
+        loadingBarInner.style.width = "0%";
+      }, 250);
+    }
 
     function clearViewer(){
       viewer.innerHTML = "";
@@ -229,17 +269,28 @@
       clearViewer();
       hintEl.textContent = "";
       setStatus("Loading…");
+      showLoading();
+      setLoadingPct(10);
 
       try{
         const loadingTask = pdfjsLib.getDocument({ url, withCredentials: false });
-        const pdf = await loadingTask.promise;
 
+        // Download progress (if total is known)
+        loadingTask.onProgress = (p) => {
+          if (!p || !p.total) return;
+          const pct = 10 + (p.loaded / p.total) * 60; // 10% -> 70%
+          setLoadingPct(pct);
+        };
+
+        const pdf = await loadingTask.promise;
         if (myToken !== currentLoadToken) return;
 
-        setStatus(`Loaded. Preparing ${pdf.numPages} pages…`);
-        hintEl.textContent = `Showing: ${url}  •  ${pdf.numPages} pages`;
+        setLoadingPct(75);
+        setStatus(`Loaded (${pdf.numPages} pages)`);
 
-        // Create all shells first for layout
+        hintEl.textContent = `Showing: ${url} • ${pdf.numPages} pages`;
+
+        // Create shells for layout immediately
         for (let i = 1; i <= pdf.numPages; i++){
           viewer.appendChild(makePageShell(i));
         }
@@ -265,13 +316,22 @@
             }
 
             try{
-              setStatus(`Rendering page ${pageNumber} / ${pdf.numPages}…`);
+              setStatus(`Rendering ${pageNumber}/${pdf.numPages}`);
               await renderPageToCanvas(pdf, pageNumber, el);
+
+              // 75% -> 98% as pages begin rendering
+              const renderPct = 75 + (pageNumber / pdf.numPages) * 23;
+              setLoadingPct(renderPct);
+
+              // Hide once the doc is usable (after page 1 renders)
+              if (pageNumber === 1) hideLoading();
+
             } catch(e){
               el.innerHTML = `<div class="error">Failed to render page ${pageNumber}.<br><code>${String(e)}</code></div>`;
+              hideLoading();
             } finally {
               io.unobserve(el);
-              if (myToken === currentLoadToken) setStatus(`Ready (${pdf.numPages} pages)`);
+              if (myToken === currentLoadToken) setStatus("Ready");
             }
           }
         }, { root: null, rootMargin: "900px 0px", threshold: 0.01 });
@@ -280,12 +340,13 @@
         document.querySelectorAll(".page").forEach(el => io.observe(el));
 
       } catch(e){
+        hideLoading();
         setStatus("Error");
         viewer.innerHTML = `
           <div class="error">
             <strong>Couldn’t load the PDF:</strong> <code>${url}</code><br><br>
             <code>${String(e)}</code><br><br>
-            Make sure the PDF is in the same GitHub repo folder as <code>index.html</code>
+            Make sure the PDF is in the same repo folder as <code>index.html</code>
             and the filename matches exactly (case-sensitive).
           </div>
         `;
@@ -297,7 +358,6 @@
       tab.addEventListener("click", () => {
         setSelectedTab(tab);
         const pdfName = tab.dataset.pdf;
-        // Reset scroll to top when switching docs
         window.scrollTo({ top: 0, behavior: "instant" });
         loadPdf(pdfName);
       });
@@ -309,5 +369,4 @@
   </script>
 </body>
 </html>
-
 
