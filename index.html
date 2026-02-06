@@ -197,7 +197,7 @@
 
     .overlayMenu{
       position: relative;
-      z-index: 1;
+      z-index: 2;        /* text layer above artwork */
 
       width: min(1400px, 92vw);
       margin: 0 auto;
@@ -222,8 +222,8 @@
       color: #fff;
       display:inline-block;
       width: 100%;
+      position: relative;
       z-index: 2;
-      position: relative;  /* ensures text stays above artwork */
     }
 
     .menuItemTitle{
@@ -250,29 +250,29 @@
     /* ================= ARTWORK (FULL WIDTH BLEED, FIXED TO VIEWPORT) ================= */
 
     .menuArtArea{
-      position: fixed;       /* fixed to viewport */
+      position: fixed;       /* fixed to viewport, outside .overlayMenu */
       left: 0;
       right: 0;
-      top: 50vh;             /* starts halfway down the screen */
+      bottom: 0;
       
       width: 100vw;
-      height: 50vh;          /* takes bottom half */
+      height: 55vh;
       pointer-events: none;
       overflow: hidden;      /* crops bottom bleed */
-      z-index: 0;            /* behind everything */
+      z-index: 1;            /* behind text (which is z-index: 2) */
     }
 
     .menuArt{
       position: absolute;
       left: 50%;
-      top: 0;                /* anchor to top of container */
+      bottom: -5%;           /* bleed 5% past bottom */
       transform: translateX(-50%);
       
       width: 110vw;          /* 5% bleed on each side */
-      height: 55vh;          /* extends past container bottom */
+      height: 60vh;          
       
       object-fit: cover;     
-      object-position: center top;
+      object-position: center bottom;
 
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
@@ -357,29 +357,22 @@
 
       /* Mobile art adjustments - positioned lower, shows full top, bleeds off bottom */
       .menuArtArea{ 
-        top: 55vh;           /* starts lower on mobile (further down the screen) */
-        height: 50vh;        /* container height */
+        bottom: -10vh;       /* push down so it bleeds off bottom of screen */
+        height: 60vh;        /* taller container */
         overflow: visible;   /* allow bleed past bottom */
       }
       .menuArt{
         position: absolute;
         top: 0;              /* anchor to TOP of container to show full top */
         left: 50%;
+        bottom: auto;        /* remove bottom positioning */
         transform: translateX(-50%);
         
         width: 110vw;        /* 5% bleed on sides */
-        height: 55vh;        /* tall enough to extend past bottom */
+        height: 65vh;        /* tall enough to extend past bottom */
         
         object-fit: cover;
         object-position: center top;  /* prioritize showing the top */
-      }
-    }
-
-    /* Medium screens (tablets/small laptops) */
-    @media (min-width: 641px) and (max-width: 1024px){
-      .menuArtArea{
-        top: 45vh;           /* adjust for medium screens */
-        height: 55vh;
       }
     }
   </style>
@@ -423,11 +416,11 @@
       <button class="menuItem" aria-selected="true" data-pdf="glass-construction-manual.pdf">
         <div class="menuItemTitle">Glass Manual</div>
       </button>
+    </div>
 
-      <!-- Artwork area -->
-      <div class="menuArtArea" aria-hidden="true">
-        <img class="menuArt" src="menu-art.png" alt="">
-      </div>
+    <!-- Artwork area - moved OUTSIDE .overlayMenu but still inside .overlay -->
+    <div class="menuArtArea" aria-hidden="true">
+      <img class="menuArt" src="menu-art.png" alt="">
     </div>
   </div>
 
