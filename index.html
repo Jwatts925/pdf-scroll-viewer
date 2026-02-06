@@ -252,24 +252,23 @@
     /* ================= ART PANEL (PINNED BOTTOM, FILLS LOWER QUADRANT, PROPORTIONAL) ================= */
 
     .menuArtArea{
-      /* full-bleed across the viewport */
       width: 100vw;
       margin-left: calc(50% - 50vw);
-
-      position: absolute;
-      left: 0;
-      right: 0;
-
-      /* pinned to bottom + slight bleed below viewport */
-      bottom: -6vh;
-
-      /* “lower quadrant” panel height */
+    
+      /* key: pushes art to the bottom of the overlay column */
+      margin-top: auto;
+    
+      /* this is your “lower quadrant” region */
       height: clamp(34vh, 42vh, 52vh);
-
+    
+      position: relative;
       pointer-events: none;
-      z-index: 1;                 /* below text, above backdrop */
-      overflow: hidden;           /* crop cleanly to this band */
+      z-index: 1;
+    
+      /* IMPORTANT: do NOT hide overflow or you’ll “crop” the top of the artwork */
+      overflow: visible;
     }
+
 
     /* DEBUG BOX (shows ONLY if image fails to load) */
     .menuArtMissing{
@@ -287,22 +286,29 @@
     .menuArtArea.missing .menuArtMissing{ display:flex; }
 
     .menuArt{
-      width: 100%;
-      height: 100%;
-      display:block;
-
-      /* KEY: fills the band proportionally (no distortion) */
-      object-fit: cover;
-
-      /* keep interesting content toward the bottom */
-      object-position: center bottom;
-
+      position: absolute;
+      left: 50%;
+    
+      /* push it LOWER (more on big screens below via media query) */
+      bottom: -10vh;
+    
+      transform: translateX(-50%);
+    
+      /* make it physically big so it fills the lower region */
+      width: 160vw;
+      height: 70vh;
+    
+      /* IMPORTANT: no top crop */
+      object-fit: contain;
+      object-position: top center;
+    
       filter: var(--art-filter);
       -webkit-filter: var(--art-filter);
-
+    
       -webkit-mask-image: none !important;
       mask-image: none !important;
-    }
+}
+
 
     /* Optional: ensure the art never covers clicks (already pointer-events:none on area) */
     .menuArt, .menuArtMissing { pointer-events:none; }
@@ -662,3 +668,4 @@
   </script>
 </body>
 </html>
+
