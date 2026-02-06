@@ -291,12 +291,9 @@
 
       /* big enough to spill down, but capped */
       height: clamp(55vh, 75vh, 85vh);
-      
-      /* Push the bottom slightly past the page */
-      transform: translateY(8vh);
 
       /* IMPORTANT: no top cropping */
-      object-fit: cover;
+      object-fit: contain;
       object-position: top center;
 
       filter: var(--art-filter);
@@ -368,7 +365,7 @@
     }
 
     /* Mobile tweaks */
-    @media (max-width: 900px){
+    @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
       #topSpacer{ height: 14px; }
@@ -665,4 +662,3 @@
   </script>
 </body>
 </html>
-
