@@ -1,439 +1,260 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>James Watts’ Portfolio</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>James Watts’ Portfolio</title>
 
-  <style>
-    :root{
-      --page-gap: 18px;
-      --bg: #ffffff;
-      --page-bg: #ffffff;
-      --text: #111;
-      --muted: rgba(0,0,0,0.55);
-      --border: rgba(0,0,0,0.10);
-      --shadow: 0 6px 18px rgba(0,0,0,0.12);
-    }
+<style>
+:root{
+  --page-gap: 18px;
+  --bg: #ffffff;
+  --page-bg: #ffffff;
+  --text: #111;
+  --muted: rgba(0,0,0,0.55);
+  --border: rgba(0,0,0,0.10);
+  --shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
 
-    body{
-      margin:0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-    }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
 
-    header{
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display:flex;
-      align-items:center;
-      justify-content: center; /* center everything */
-      gap: 28px;
-      padding:12px 14px;
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
+/* ================= HEADER ================= */
 
-    .brand{
-      display:flex;
-      align-items:baseline;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-start;
-      white-space: nowrap;
-    }
-    .brand .title{
-      font-weight:600;
-      font-size:16px;
-      letter-spacing: 0.2px;
-    }
-    .brand .sub{
-      font-size:12px;
-      color: var(--muted);
-    }
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:24px;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
 
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:center; /* center the buttons */
-    }
+.brand{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.brand .title{ font-weight:600; font-size:16px; }
+.brand .sub{ font-size:12px; color:var(--muted); }
 
-    .tab{
-      appearance:none;
-      border:1px solid var(--border);
-      background: #fff;
-      color: var(--text);
-      border-radius: 999px;
-      padding:8px 12px;
-      cursor:pointer;
-      font-size: 13px;
-      line-height: 1;
-      box-shadow: none;
-      user-select: none;
-    }
-    .tab:hover{ border-color: rgba(0,0,0,0.18); }
-    .tab[aria-selected="true"]{
-      border-color: rgba(0,0,0,0.22);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      font-weight: 600;
-    }
+.tabs{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+}
 
-    /* Loading bar (sticky under header) */
-    #loadingBar{
-      position: sticky;
-      top: 56px;          /* header height-ish; safe default */
-      z-index: 9;
-      height: 3px;
-      width: 100%;
-      background: transparent;
-      opacity: 0;
-      transition: opacity 160ms ease;
-    }
-    #loadingBar.show{ opacity: 1; }
+.tab{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  cursor:pointer;
+}
+.tab[aria-selected="true"]{
+  font-weight:600;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
 
-    #loadingBarInner{
-      height: 100%;
-      width: 0%;
-      background: rgba(0,0,0,0.35);
-      border-radius: 999px;
-      transition: width 180ms ease;
-    }
+/* Download button */
+.download{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:13px;
+  cursor:pointer;
+  text-decoration:none;
+  color:var(--text);
+}
+.download:hover{
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
 
-    #viewer{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding: 18px 10px 60px;
-      gap: var(--page-gap);
-    }
+/* ================= LOADING BAR ================= */
 
-    .page{
-      width: min(1100px, 96vw);
-      background: var(--page-bg);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      border: 1px solid var(--border);
-    }
+#loadingBar{
+  position:sticky;
+  top:56px;
+  height:3px;
+  width:100%;
+  opacity:0;
+  transition:opacity 160ms ease;
+}
+#loadingBar.show{ opacity:1; }
+#loadingBarInner{
+  height:100%;
+  width:0%;
+  background:rgba(0,0,0,0.35);
+  transition:width 180ms ease;
+}
 
-    .page canvas{
-      display:block;
-      width:100%;
-      height:auto;
-    }
+/* ================= PDF VIEWER ================= */
 
-    .skeleton{
-      width:100%;
-      aspect-ratio: 8.5 / 11;
-      background: linear-gradient(90deg, #f4f4f4, #ededed, #f4f4f4);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{
-      0%{ background-position: 200% 0; }
-      100%{ background-position: -200% 0; }
-    }
+#viewer{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:var(--page-gap);
+  padding:20px 10px 60px;
+}
 
-    .error{
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 16px;
-      border: 1px solid rgba(180,0,0,0.18);
-      background: rgba(255,0,0,0.04);
-      border-radius: 12px;
-      color: #700;
-    }
-    .error code{ color:#700; }
+.page{
+  width:min(1100px,96vw);
+  background:#fff;
+  border-radius:14px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-    .hint{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 6px;
-      text-align:center;
-      max-width: 1100px;
-      padding: 0 12px;
-    }
+.page canvas{ width:100%; display:block; }
 
-      /* Mobile layout only */
-  @media (max-width: 640px){
-    header{
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-  
-    .brand{
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 2px;
-    }
-  
-    .tabs{
-      width: 100%;
-      justify-content: center;
-    }
-  
-    .tab{
-      font-size: 14px;
-      padding: 9px 14px;
-    }
-  
-    /* Loading bar needs to move down since header is taller */
-    #loadingBar{
-      top: 88px;
-    }
-  }
+.skeleton{
+  width:100%;
+  aspect-ratio:8.5/11;
+  background:linear-gradient(90deg,#f4f4f4,#ededed,#f4f4f4);
+  background-size:200% 100%;
+  animation:shimmer 1.2s infinite linear;
+}
+@keyframes shimmer{
+  from{background-position:200% 0}
+  to{background-position:-200% 0}
+}
 
-    .downloads{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-      align-items:center;
-    }
-    
-    .dl{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--text);
-      text-decoration:none;
-    }
-    
-    .dl:hover{
-      border-color: rgba(0,0,0,0.18);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
+/* ================= MOBILE ================= */
 
-
-  </style>
+@media (max-width:640px){
+  header{ flex-direction:column; gap:10px; }
+  #loadingBar{ top:96px; }
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <div class="brand">
-      <div class="title">James Watts’ Portfolio</div>
-      <div class="sub">2021–2026</div>
-    </div>
 
-    <nav class="tabs" aria-label="Document tabs">
-      <button class="tab" aria-selected="true" data-pdf="resume.pdf">Resume</button>
-      <button class="tab" aria-selected="false"  data-pdf="portfolio.pdf">Portfolio</button>
-      <button class="tab" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
-    </nav>
+<header>
+  <div class="brand">
+    <div class="title">James Watts’ Portfolio</div>
+    <div class="sub">2021–2026</div>
+  </div>
 
-    <div class="downloads">
-      <a class="dl" href="resume.pdf" download>Download Resume (PDF)</a>
-      <a class="dl" href="portfolio.pdf" download>Download Portfolio (PDF)</a>
-      <a class="dl" href="glass-construction-manual.pdf" download>Download Glass Manual (PDF)</a>
-    </div>
+  <nav class="tabs">
+    <button class="tab" aria-selected="true"  data-pdf="resume.pdf">Resume</button>
+    <button class="tab" aria-selected="false" data-pdf="portfolio.pdf">Portfolio</button>
+    <button class="tab" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
+  </nav>
 
-  </header>
+  <a id="downloadBtn" class="download" href="resume.pdf" download>
+    Download PDF
+  </a>
+</header>
 
-  <!-- Loading bar (under the header) -->
-  <div id="loadingBar" aria-hidden="true"><div id="loadingBarInner"></div></div>
+<div id="loadingBar"><div id="loadingBarInner"></div></div>
 
-  <main id="viewer"></main>
-  <div class="hint" id="hint"></div>
+<main id="viewer"></main>
 
-  <!-- PDF.js (3.x classic build works on GitHub Pages) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-    const viewer = document.getElementById("viewer");
-    const hintEl = document.getElementById("hint");
+const viewer = document.getElementById("viewer");
+const tabs = Array.from(document.querySelectorAll(".tab"));
+const downloadBtn = document.getElementById("downloadBtn");
+const loadingBar = document.getElementById("loadingBar");
+const loadingBarInner = document.getElementById("loadingBarInner");
 
-    // Status element is intentionally NOT in the UI; keep this safe anyway.
-    const statusEl = document.getElementById("status") || { textContent: "" };
+let observer = null;
+let loadToken = 0;
+const TARGET_WIDTH = 1100;
 
-    const loadingBar = document.getElementById("loadingBar");
-    const loadingBarInner = document.getElementById("loadingBarInner");
+function showLoading(){ loadingBar.classList.add("show"); loadingBarInner.style.width="8%"; }
+function setProgress(p){ loadingBarInner.style.width=Math.min(100,p)+"%"; }
+function hideLoading(){
+  setProgress(100);
+  setTimeout(()=>{ loadingBar.classList.remove("show"); loadingBarInner.style.width="0%"; },250);
+}
 
-    const tabs = Array.from(document.querySelectorAll(".tab"));
-    const TARGET_RENDER_WIDTH = 1100;
+function clearViewer(){
+  viewer.innerHTML="";
+  if(observer){ observer.disconnect(); observer=null; }
+}
 
-    let currentLoadToken = 0;
-    let currentObserver = null;
+function setActive(tab){
+  tabs.forEach(t=>t.setAttribute("aria-selected",t===tab));
+  downloadBtn.href = tab.dataset.pdf;
+}
 
-    function setStatus(msg){ statusEl.textContent = msg; }
+async function loadPdf(url){
+  const token = ++loadToken;
+  clearViewer();
+  showLoading();
+  setProgress(10);
 
-    function showLoading(){
-      loadingBar.classList.add("show");
-      loadingBarInner.style.width = "8%";
+  const task = pdfjsLib.getDocument(url);
+  task.onProgress = p=>{
+    if(p.total) setProgress(10+(p.loaded/p.total)*60);
+  };
+
+  const pdf = await task.promise;
+  if(token!==loadToken) return;
+  setProgress(75);
+
+  for(let i=1;i<=pdf.numPages;i++){
+    const shell=document.createElement("div");
+    shell.className="page";
+    shell.dataset.page=i;
+    shell.innerHTML='<div class="skeleton"></div>';
+    viewer.appendChild(shell);
+  }
+
+  observer=new IntersectionObserver(async entries=>{
+    for(const e of entries){
+      if(!e.isIntersecting) continue;
+      observer.unobserve(e.target);
+      const page=await pdf.getPage(+e.target.dataset.page);
+      const vp1=page.getViewport({scale:1});
+      const scale=TARGET_WIDTH/vp1.width;
+      const vp=page.getViewport({scale});
+      const c=document.createElement("canvas");
+      c.width=vp.width; c.height=vp.height;
+      e.target.innerHTML=""; e.target.appendChild(c);
+      await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
+      setProgress(75+(+e.target.dataset.page/pdf.numPages)*23);
+      if(+e.target.dataset.page===1) hideLoading();
     }
-    function setLoadingPct(pct){
-      const clamped = Math.max(0, Math.min(100, pct));
-      loadingBarInner.style.width = clamped + "%";
-    }
-    function hideLoading(){
-      setLoadingPct(100);
-      setTimeout(() => {
-        loadingBar.classList.remove("show");
-        loadingBarInner.style.width = "0%";
-      }, 250);
-    }
+  },{rootMargin:"900px"});
+  document.querySelectorAll(".page").forEach(p=>observer.observe(p));
+}
 
-    function clearViewer(){
-      viewer.innerHTML = "";
-      if (currentObserver){
-        try { currentObserver.disconnect(); } catch(e){}
-        currentObserver = null;
-      }
-    }
+tabs.forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    setActive(tab);
+    window.scrollTo({top:0});
+    loadPdf(tab.dataset.pdf);
+  });
+});
 
-    function makePageShell(pageNumber){
-      const wrap = document.createElement("div");
-      wrap.className = "page";
-      wrap.dataset.pageNumber = String(pageNumber);
+/* Initial load */
+const startTab = document.querySelector('.tab[aria-selected="true"]');
+setActive(startTab);
+loadPdf(startTab.dataset.pdf);
+</script>
 
-      const skel = document.createElement("div");
-      skel.className = "skeleton";
-      wrap.appendChild(skel);
-
-      return wrap;
-    }
-
-    async function renderPageToCanvas(pdf, pageNumber, container){
-      const page = await pdf.getPage(pageNumber);
-
-      const viewport1 = page.getViewport({ scale: 1 });
-      const scale = TARGET_RENDER_WIDTH / viewport1.width;
-      const viewport = page.getViewport({ scale });
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d", { alpha: false });
-
-      canvas.width = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-
-      container.innerHTML = "";
-      container.appendChild(canvas);
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-    }
-
-    function setSelectedTab(tabEl){
-      tabs.forEach(t => t.setAttribute("aria-selected", t === tabEl ? "true" : "false"));
-    }
-
-    async function loadPdf(url){
-      const myToken = ++currentLoadToken;
-
-      clearViewer();
-      hintEl.textContent = "";
-      setStatus("Loading…");
-      showLoading();
-      setLoadingPct(10);
-
-      try{
-        const loadingTask = pdfjsLib.getDocument({ url, withCredentials: false });
-
-        // Download progress (if total is known)
-        loadingTask.onProgress = (p) => {
-          if (!p || !p.total) return;
-          const pct = 10 + (p.loaded / p.total) * 60; // 10% -> 70%
-          setLoadingPct(pct);
-        };
-
-        const pdf = await loadingTask.promise;
-        if (myToken !== currentLoadToken) return;
-
-        setLoadingPct(75);
-        setStatus(`Loaded (${pdf.numPages} pages)`);
-
-        hintEl.textContent = `Showing: ${url} • ${pdf.numPages} pages`;
-
-        // Create shells for layout immediately
-        for (let i = 1; i <= pdf.numPages; i++){
-          viewer.appendChild(makePageShell(i));
-        }
-
-        const io = new IntersectionObserver(async (entries) => {
-          for (const entry of entries){
-            if (!entry.isIntersecting) continue;
-
-            const el = entry.target;
-            const pageNumber = Number(el.dataset.pageNumber);
-
-            if (el.dataset.rendered === "1"){
-              io.unobserve(el);
-              continue;
-            }
-
-            el.dataset.rendered = "1";
-
-            // If user switched tabs, stop rendering old doc
-            if (myToken !== currentLoadToken){
-              io.disconnect();
-              return;
-            }
-
-            try{
-              setStatus(`Rendering ${pageNumber}/${pdf.numPages}`);
-              await renderPageToCanvas(pdf, pageNumber, el);
-
-              // 75% -> 98% as pages begin rendering
-              const renderPct = 75 + (pageNumber / pdf.numPages) * 23;
-              setLoadingPct(renderPct);
-
-              // Hide once the doc is usable (after page 1 renders)
-              if (pageNumber === 1) hideLoading();
-
-            } catch(e){
-              el.innerHTML = `<div class="error">Failed to render page ${pageNumber}.<br><code>${String(e)}</code></div>`;
-              hideLoading();
-            } finally {
-              io.unobserve(el);
-              if (myToken === currentLoadToken) setStatus("Ready");
-            }
-          }
-        }, { root: null, rootMargin: "900px 0px", threshold: 0.01 });
-
-        currentObserver = io;
-        document.querySelectorAll(".page").forEach(el => io.observe(el));
-
-      } catch(e){
-        hideLoading();
-        setStatus("Error");
-        viewer.innerHTML = `
-          <div class="error">
-            <strong>Couldn’t load the PDF:</strong> <code>${url}</code><br><br>
-            <code>${String(e)}</code><br><br>
-            Make sure the PDF is in the same repo folder as <code>index.html</code>
-            and the filename matches exactly (case-sensitive).
-          </div>
-        `;
-      }
-    }
-
-    // Tab click handler
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        setSelectedTab(tab);
-        const pdfName = tab.dataset.pdf;
-        window.scrollTo({ top: 0, behavior: "instant" });
-        loadPdf(pdfName);
-      });
-    });
-
-    // Auto-load default selected tab (Portfolio)
-    const defaultTab = document.querySelector('.tab[aria-selected="true"]') || tabs[0];
-    loadPdf(defaultTab.dataset.pdf);
-  </script>
 </body>
 </html>
-
-
-
-
-
