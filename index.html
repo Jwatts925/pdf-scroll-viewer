@@ -238,8 +238,6 @@
 
     /* ================= ARTWORK (FULL BLEED, NO FADE, TOP NOT CUT, BOTTOM SPILLS) ================= */
 
-    /* Put your file in the SAME folder as index.html.
-       Name it exactly: menu-art.png (or change the filename below). */
     .menuArtArea{
       width: 100vw;
       margin-left: calc(50% - 50vw);
@@ -347,10 +345,13 @@
       }
 
       /* Slightly smaller artwork on mobile (same effect: top visible, bottom spills) */
-      .menuArtArea{ height: 64vh; }     /* was 70vh-ish earlier */
+      .menuArtArea{ height: 64vh; }
       .menuArt{
-        width: 130vw;                   /* was 140vw */
-        height: 88vh;                   /* was 95vh */
+        width: 130vw;
+        height: 88vh;
+
+        /* ✅ NUDGE RIGHT ON MOBILE ONLY */
+        transform: translateX(calc(-50% + 18px));
       }
     }
   </style>
@@ -622,4 +623,3 @@
   </script>
 </body>
 </html>
-
