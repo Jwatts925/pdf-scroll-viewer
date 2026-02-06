@@ -223,6 +223,7 @@
       display:inline-block;
       width: 100%;
       z-index: 2;
+      position: relative;  /* ensures text stays above artwork */
     }
 
     .menuItemTitle{
@@ -252,26 +253,26 @@
       position: fixed;       /* fixed to viewport */
       left: 0;
       right: 0;
-      bottom: 0;
+      top: 50vh;             /* starts halfway down the screen */
       
       width: 100vw;
-      height: 55vh;
+      height: 50vh;          /* takes bottom half */
       pointer-events: none;
       overflow: hidden;      /* crops bottom bleed */
-      z-index: 1;
+      z-index: 0;            /* behind everything */
     }
 
     .menuArt{
       position: absolute;
       left: 50%;
-      bottom: -5%;           /* bleed 5% past bottom */
+      top: 0;                /* anchor to top of container */
       transform: translateX(-50%);
       
       width: 110vw;          /* 5% bleed on each side */
-      height: 60vh;          
+      height: 55vh;          /* extends past container bottom */
       
       object-fit: cover;     
-      object-position: center bottom;
+      object-position: center top;
 
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
@@ -356,23 +357,29 @@
 
       /* Mobile art adjustments - positioned lower, shows full top, bleeds off bottom */
       .menuArtArea{ 
-        top: auto;           /* remove any top positioning */
-        bottom: 8vh;       /* push down so it bleeds off bottom of screen */
-        height: 60vh;        /* taller container */
+        top: 55vh;           /* starts lower on mobile (further down the screen) */
+        height: 50vh;        /* container height */
         overflow: visible;   /* allow bleed past bottom */
       }
       .menuArt{
         position: absolute;
         top: 0;              /* anchor to TOP of container to show full top */
         left: 50%;
-        bottom: auto;        /* remove bottom positioning */
         transform: translateX(-50%);
         
         width: 110vw;        /* 5% bleed on sides */
-        height: 65vh;        /* tall enough to extend past bottom */
+        height: 55vh;        /* tall enough to extend past bottom */
         
         object-fit: cover;
         object-position: center top;  /* prioritize showing the top */
+      }
+    }
+
+    /* Medium screens (tablets/small laptops) */
+    @media (min-width: 641px) and (max-width: 1024px){
+      .menuArtArea{
+        top: 45vh;           /* adjust for medium screens */
+        height: 55vh;
       }
     }
   </style>
@@ -642,5 +649,3 @@
   </script>
 </body>
 </html>
-
-
