@@ -13,14 +13,17 @@
   <style>
     :root{
       --page-gap: 18px;
-      --bg: #ffffff;
-      --page-bg: #ffffff;
-      --text: #111;
-      --muted: rgba(0,0,0,0.55);
-      --border: rgba(0,0,0,0.10);
+
+      /* BLACK THEME */
+      --bg: #000000;
+      --page-bg: #000000;
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.65);
+      --border: rgba(255,255,255,0.18);
+
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
-      /* Leave SVG colors as-is */
+      /* SVG art keeps its own colors */
       --art-filter: none;
     }
 
@@ -31,7 +34,6 @@
       font-family: var(--font);
     }
 
-    /* Lock scroll when menu is open (desktop + mobile) */
     body.menu-open{
       overflow: hidden;
       height: 100vh;
@@ -51,7 +53,7 @@
       gap: 16px;
 
       padding: 12px 14px;
-      background: rgba(255,255,255,0.88);
+      background: rgba(0,0,0,0.88);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
@@ -61,6 +63,7 @@
       transition: transform 220ms ease;
       will-change: transform;
     }
+
     body.top-hidden header,
     body.top-hidden #loadingBar{
       transform: translateY(-120%);
@@ -70,7 +73,6 @@
       display:flex;
       align-items:baseline;
       gap:12px;
-      min-width: 0;
       white-space: nowrap;
     }
 
@@ -78,26 +80,25 @@
       display:flex;
       align-items:baseline;
       gap:10px;
-      white-space: nowrap;
-      min-width: 0;
     }
+
     .brand .title{
       font-weight:700;
       font-size:16px;
       letter-spacing: 0.2px;
+      color:#fff;
     }
+
     .brand .sub{
       font-size:12px;
       color: var(--muted);
-      font-weight: 400;
+      font-weight:400;
     }
 
     .divider{
       width:1px;
       height:18px;
-      background: rgba(0,0,0,0.18);
-      align-self:center;
-      flex: 0 0 auto;
+      background: rgba(255,255,255,0.35);
     }
 
     .download{
@@ -109,231 +110,140 @@
       font-size:13px;
       font-weight:700;
       text-decoration:none;
-      white-space:nowrap;
       cursor:pointer;
 
-      color: var(--text) !important;
-      -webkit-text-fill-color: var(--text);
+      color:#fff !important;
+      -webkit-text-fill-color:#fff;
       font-family: var(--font);
     }
-    .download:visited,
-    .download:hover,
-    .download:active,
-    .download:focus{
-      color: var(--text) !important;
-      -webkit-text-fill-color: var(--text);
-      text-decoration: underline;
-      outline: none;
-    }
 
-    .right{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      white-space: nowrap;
-    }
+    .download:hover{ text-decoration: underline; }
 
     .menuBtn{
-      appearance:none;
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      width: 34px;
-      height: 28px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
+      background:none;
+      border:none;
+      width:34px;
+      height:28px;
       cursor:pointer;
       padding:0;
     }
-    .menuBtn:hover{ opacity: 0.7; }
 
     .menuIcon{
       position: relative;
       width: 22px;
       height: 16px;
     }
+
     .menuIcon span{
       position:absolute;
       left:0;
       right:0;
       height:2px;
-      background: rgba(0,0,0,0.75);
-      border-radius: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius:2px;
       transition: transform 160ms ease, top 160ms ease, opacity 160ms ease;
     }
-    .menuIcon span:nth-child(1){ top: 1px; }
-    .menuIcon span:nth-child(2){ top: 7px; }
-    .menuIcon span:nth-child(3){ top: 13px; }
+
+    .menuIcon span:nth-child(1){ top:1px; }
+    .menuIcon span:nth-child(2){ top:7px; }
+    .menuIcon span:nth-child(3){ top:13px; }
 
     body.menu-open .menuIcon span:nth-child(1){
-      top: 7px;
+      top:7px;
       transform: rotate(45deg);
     }
     body.menu-open .menuIcon span:nth-child(2){
-      opacity: 0;
+      opacity:0;
     }
     body.menu-open .menuIcon span:nth-child(3){
-      top: 7px;
+      top:7px;
       transform: rotate(-45deg);
     }
 
-    /* ================= FULLSCREEN OVERLAY MENU ================= */
+    /* ================= OVERLAY MENU ================= */
 
     .overlay{
-      position: fixed;
-      inset: 0;
-      z-index: 999;
+      position:fixed;
+      inset:0;
+      z-index:999;
       display:none;
-      background: #000;
-      opacity: 1;
-      overflow: hidden;
+      background:#000;
+      overflow:hidden;
     }
+
     body.menu-open .overlay{ display:block; }
 
-    .overlayBackdrop{
-      position:absolute;
-      inset:0;
-    }
-
-    /* Full-height “stage” that holds menu text + pinned art panel */
     .overlayMenu{
       position: relative;
-      z-index: 1;
-
       width: min(1400px, 92vw);
       margin: 0 auto;
-
       padding: 90px 0 0;
       display:flex;
       flex-direction:column;
-      gap: 28px;
-
-      min-height: 100vh;
-      box-sizing: border-box;
+      gap:28px;
+      min-height:100vh;
     }
 
     .menuItem{
-      appearance:none;
+      background:none;
       border:none;
-      background: transparent;
       text-align:left;
       cursor:pointer;
-      padding: 0;
-      font-family: var(--font);
-      color: #fff;
-      display:inline-block;
-      width: 100%;
-
-      position: relative;
-      z-index: 3;
+      padding:0;
+      width:100%;
+      color:#fff;
     }
 
     .menuItemTitle{
-  font-weight: 700;
-  font-size: clamp(52px, 7.5vw, 96px);
-  line-height: 1.02;
-  transform-origin: left center;
-  transform: scale(1);
-  transition: transform 160ms ease, opacity 160ms ease;
-}
+      font-weight:700;
+      font-size: clamp(52px, 7.5vw, 96px);
+      line-height:1.02;
+      transform-origin:left center;
+      transform:scale(1);
+      transition: transform 160ms ease;
+    }
 
-/* Hover ALWAYS enlarges */
-.menuItem:hover .menuItemTitle{
-  transform: scale(1.06);
-  opacity: 1;
-}
+    .menuItem:hover .menuItemTitle{
+      transform:scale(1.06);
+    }
 
-/* Selected has a base emphasis */
-.menuItem[aria-selected="true"] .menuItemTitle{
-  transform: scale(1.04);
-  opacity: 1;
-}
+    .menuItem[aria-selected="true"] .menuItemTitle{
+      transform:scale(1.04);
+    }
 
-/* Hover + selected = slightly bigger still */
-.menuItem[aria-selected="true"]:hover .menuItemTitle{
-  transform: scale(1.08);
-}
+    .menuItem[aria-selected="true"]:hover .menuItemTitle{
+      transform:scale(1.08);
+    }
 
-
-    /* ================= ART PANEL ================= */
+    /* ================= ART ================= */
 
     .menuArtArea{
-      width: 100vw;
+      width:100vw;
       margin-left: calc(50% - 50vw);
-      margin-top: auto;
+      margin-top:auto;
       height: clamp(34vh, 42vh, 52vh);
-      position: relative;
-      pointer-events: none;
-      z-index: 1;
-      overflow: visible;
+      position:relative;
+      overflow:visible;
+      pointer-events:none;
     }
-
-    .menuArtMissing{
-      display:none;
-      width: 100%;
-      height: 100%;
-      border: 2px dashed rgba(255,255,255,0.35);
-      border-radius: 16px;
-      color: rgba(255,255,255,0.65);
-      font: 600 14px/1.2 var(--font);
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0.4px;
-    }
-    .menuArtArea.missing .menuArtMissing{ display:flex; }
 
     .menuArt{
-      position: absolute;
-      left: 50%;
-      bottom: -1vh;
-      transform: translateX(-50%);
-      width: 100vw;
-      height: auto;
-      max-height: 100vh;
-
-      object-fit: contain;
-      object-position: top center;
-
-      filter: var(--art-filter);
-      -webkit-filter: var(--art-filter);
-
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
+      position:absolute;
+      left:50%;
+      bottom:-1vh;
+      transform:translateX(-50%);
+      width:100vw;
+      height:auto;
+      max-height:100vh;
+      object-fit:contain;
+      object-position:top center;
     }
 
-    @media (min-width: 1200px){
+    @media (min-width:1200px){
       .menuArt{
-        max-height: 100vh;
-        bottom: -50vh;
+        bottom:-50vh;
       }
     }
-
-    .menuArt, .menuArtMissing { pointer-events:none; }
-
-    /* ================= LOADING BAR ================= */
-
-    #loadingBar{
-      position: sticky;
-      top: 56px;
-      z-index: 9;
-      height: 3px;
-      width: 100%;
-      background: transparent;
-      opacity: 0;
-      transition: opacity 160ms ease, transform 220ms ease;
-    }
-    #loadingBar.show{ opacity: 1; }
-
-    #loadingBarInner{
-      height: 100%;
-      width: 0%;
-      background: rgba(0,0,0,0.35);
-      border-radius: 999px;
-      transition: width 180ms ease;
-    }
-
-    #topSpacer{ height: 18px; }
 
     /* ================= PDF VIEWER ================= */
 
@@ -341,113 +251,67 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      padding: 0 10px 60px;
-      gap: var(--page-gap);
+      padding:0 10px 60px;
+      gap:var(--page-gap);
+      background:#000;
     }
 
     .page{
       width: min(1100px, 96vw);
-      background: var(--page-bg);
-      border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      background:#000;
+      border-radius:4px;
+      border:1px solid rgba(255,255,255,0.1);
+      box-shadow:0 2px 10px rgba(0,0,0,0.6);
       overflow:hidden;
-      border: 1px solid var(--border);
     }
 
     .page canvas{
-      display:block;
       width:100%;
       height:auto;
+      display:block;
     }
 
-    .skeleton{
-      width:100%;
-      aspect-ratio: 8.5 / 11;
-      background: linear-gradient(90deg, #f4f4f4, #ededed, #f4f4f4);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{
-      0%{ background-position: 200% 0; }
-      100%{ background-position: -200% 0; }
-    }
-
-    @media (max-width: 640px){
-      .brand .title{ font-size: 15px; }
-      .download{ font-size: 12px; }
-      #topSpacer{ height: 14px; }
-
-      .overlayMenu{
-        padding-top: 72px;
-        gap: 22px;
-      }
-
-      .menuItemTitle{
-        font-size: clamp(44px, 10vw, 72px);
-      }
-
-      .menuArtArea{
-        bottom: -4vh;
-        height: 50vh;
-      }
-    }
   </style>
 </head>
 
 <body>
+  <!-- HEADER -->
   <header>
     <div class="left">
       <div class="brand">
         <div class="title">James Watts</div>
         <div class="sub">2021–2026</div>
       </div>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <a id="downloadBtn" class="download" href="" download>Download PDF</a>
+      <div class="divider"></div>
+      <a id="downloadBtn" class="download" download>Download PDF</a>
     </div>
 
-    <div class="right">
-      <button id="menuBtn" class="menuBtn" aria-label="Open menu" aria-expanded="false">
-        <div class="menuIcon" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </div>
-      </button>
-    </div>
+    <button id="menuBtn" class="menuBtn">
+      <div class="menuIcon">
+        <span></span><span></span><span></span>
+      </div>
+    </button>
   </header>
 
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Document menu">
-    <div class="overlayBackdrop" aria-hidden="true"></div>
-
-    <div class="overlayMenu" aria-label="Document tabs">
-      <button class="menuItem" aria-selected="false" data-pdf="the-man.pdf">
-        <div class="menuItemTitle">The Man</div>
-      </button>
-
-      <button class="menuItem" aria-selected="false" data-pdf="resume.pdf">
-        <div class="menuItemTitle">The Resume</div>
-      </button>
-
-      <button class="menuItem" aria-selected="false" data-pdf="portfolio.pdf">
-        <div class="menuItemTitle">The Portfolio</div>
-      </button>
-
+  <!-- OVERLAY -->
+  <div id="overlay" class="overlay">
+    <div class="overlayMenu">
+      <button class="menuItem" data-pdf="the-man.pdf"><div class="menuItemTitle">The Man</div></button>
+      <button class="menuItem" data-pdf="resume.pdf"><div class="menuItemTitle">The Resume</div></button>
+      <button class="menuItem" data-pdf="portfolio.pdf"><div class="menuItemTitle">The Portfolio</div></button>
       <button class="menuItem" aria-selected="true" data-pdf="glass-construction-manual.pdf">
         <div class="menuItemTitle">The Glass Manual</div>
       </button>
 
-      <div id="menuArtArea" class="menuArtArea" aria-hidden="true">
-        <div class="menuArtMissing">IMAGE NOT FOUND: menu-art.svg</div>
-        <img id="menuArt" class="menuArt" src="menu-art.svg" alt="">
+      <div class="menuArtArea">
+        <img class="menuArt" src="menu-art.svg" alt="">
       </div>
     </div>
   </div>
 
-  <div id="loadingBar" aria-hidden="true"><div id="loadingBarInner"></div></div>
-  <div id="topSpacer" aria-hidden="true"></div>
-
   <main id="viewer"></main>
 
+  <!-- PDF.JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -455,225 +319,45 @@
 
     const viewer = document.getElementById("viewer");
     const downloadBtn = document.getElementById("downloadBtn");
-    const loadingBar = document.getElementById("loadingBar");
-    const loadingBarInner = document.getElementById("loadingBarInner");
-
     const menuBtn = document.getElementById("menuBtn");
     const overlay = document.getElementById("overlay");
-    const backdrop = overlay.querySelector(".overlayBackdrop");
-    const menuItems = Array.from(document.querySelectorAll(".menuItem"));
+    const menuItems = [...document.querySelectorAll(".menuItem")];
 
-    const menuArt = document.getElementById("menuArt");
-    const menuArtArea = document.getElementById("menuArtArea");
-    menuArt.addEventListener("error", () => {
-      menuArtArea.classList.add("missing");
-      console.warn("menu-art.svg failed to load. Check filename + location.");
+    function openMenu(){ document.body.classList.add("menu-open"); }
+    function closeMenu(){ document.body.classList.remove("menu-open"); }
+
+    menuBtn.onclick = () =>
+      document.body.classList.contains("menu-open") ? closeMenu() : openMenu();
+
+    menuItems.forEach(item=>{
+      item.onclick = ()=>{
+        menuItems.forEach(b=>b.removeAttribute("aria-selected"));
+        item.setAttribute("aria-selected","true");
+        closeMenu();
+        loadPdf(item.dataset.pdf);
+      };
     });
-
-    let observer = null;
-    let loadToken = 0;
-    const TARGET_WIDTH = 1100;
-
-    function showLoading(){
-      loadingBar.classList.add("show");
-      loadingBarInner.style.width = "8%";
-    }
-    function setProgress(p){
-      const clamped = Math.max(0, Math.min(100, p));
-      loadingBarInner.style.width = clamped + "%";
-    }
-    function hideLoading(){
-      setProgress(100);
-      setTimeout(() => {
-        loadingBar.classList.remove("show");
-        loadingBarInner.style.width = "0%";
-      }, 250);
-    }
-
-    function clearViewer(){
-      viewer.innerHTML = "";
-      if (observer){
-        observer.disconnect();
-        observer = null;
-      }
-    }
-
-    function setActiveItem(item){
-      menuItems.forEach(b => b.setAttribute("aria-selected", b === item ? "true" : "false"));
-      downloadBtn.href = item.dataset.pdf;
-      downloadBtn.setAttribute("download", "");
-    }
-
-    function showStartMessage(){
-      clearViewer();
-      downloadBtn.href = "";
-      viewer.innerHTML = `
-        <div style="max-width:900px;margin:30px auto;padding:16px;border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.03);border-radius:12px;color:#222;">
-          <strong>Select a document</strong><br>
-          Open the menu and choose a tab to load the PDF.
-        </div>
-      `;
-    }
-
-    function makeShell(pageNumber){
-      const wrap = document.createElement("div");
-      wrap.className = "page";
-      wrap.dataset.page = String(pageNumber);
-      wrap.innerHTML = '<div class="skeleton"></div>';
-      return wrap;
-    }
-
-    async function renderPage(pdf, pageNumber, container){
-      const page = await pdf.getPage(pageNumber);
-      const vp1 = page.getViewport({ scale: 1 });
-      const scale = TARGET_WIDTH / vp1.width;
-      const vp = page.getViewport({ scale });
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d", { alpha: false });
-
-      canvas.width = Math.floor(vp.width);
-      canvas.height = Math.floor(vp.height);
-
-      container.innerHTML = "";
-      container.appendChild(canvas);
-
-      await page.render({ canvasContext: ctx, viewport: vp }).promise;
-    }
 
     async function loadPdf(url){
-      const token = ++loadToken;
-
-      clearViewer();
-      showLoading();
-      setProgress(10);
-
-      try{
-        const task = pdfjsLib.getDocument({ url, withCredentials: false });
-
-        task.onProgress = (p) => {
-          if (!p || !p.total) return;
-          setProgress(10 + (p.loaded / p.total) * 60);
-        };
-
-        const pdf = await task.promise;
-        if (token !== loadToken) return;
-
-        setProgress(75);
-
-        for (let i = 1; i <= pdf.numPages; i++){
-          viewer.appendChild(makeShell(i));
-        }
-
-        observer = new IntersectionObserver(async (entries) => {
-          for (const entry of entries){
-            if (!entry.isIntersecting) continue;
-            observer.unobserve(entry.target);
-
-            if (token !== loadToken) return;
-
-            const pageNumber = Number(entry.target.dataset.page);
-            await renderPage(pdf, pageNumber, entry.target);
-
-            setProgress(75 + (pageNumber / pdf.numPages) * 23);
-            if (pageNumber === 1) hideLoading();
-          }
-        }, { rootMargin: "900px 0px" });
-
-        document.querySelectorAll(".page").forEach(el => observer.observe(el));
-
-      } catch (err){
-        hideLoading();
-        viewer.innerHTML = `
-          <div style="max-width:900px;margin:30px auto;padding:16px;border:1px solid rgba(180,0,0,0.18);background:rgba(255,0,0,0.04);border-radius:12px;color:#700;">
-            <strong>Couldn’t load the PDF:</strong> <code>${url}</code><br><br>
-            <code>${String(err)}</code>
-          </div>
-        `;
+      viewer.innerHTML="";
+      downloadBtn.href = url;
+      const pdf = await pdfjsLib.getDocument(url).promise;
+      for(let i=1;i<=pdf.numPages;i++){
+        const page = await pdf.getPage(i);
+        const vp = page.getViewport({ scale: 1.2 });
+        const canvas = document.createElement("canvas");
+        canvas.width = vp.width;
+        canvas.height = vp.height;
+        const ctx = canvas.getContext("2d");
+        await page.render({canvasContext:ctx,viewport:vp}).promise;
+        const wrap = document.createElement("div");
+        wrap.className="page";
+        wrap.appendChild(canvas);
+        viewer.appendChild(wrap);
       }
     }
 
-    function openMenu(){
-      document.body.classList.add("menu-open");
-      menuBtn.setAttribute("aria-expanded", "true");
-      menuBtn.setAttribute("aria-label", "Close menu");
-      document.body.classList.remove("top-hidden");
-    }
-
-    function closeMenu(){
-      document.body.classList.remove("menu-open");
-      menuBtn.setAttribute("aria-expanded", "false");
-      menuBtn.setAttribute("aria-label", "Open menu");
-    }
-
-    menuBtn.addEventListener("click", () => {
-      const open = document.body.classList.contains("menu-open");
-      if (open) closeMenu();
-      else openMenu();
-    });
-
-    backdrop.addEventListener("click", () => closeMenu());
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeMenu();
-    });
-
-    menuItems.forEach(item => {
-      item.addEventListener("click", () => {
-        setActiveItem(item);
-        closeMenu();
-        window.scrollTo({ top: 0, behavior: "instant" });
-        loadPdf(item.dataset.pdf);
-      });
-    });
-
-    // ✅ Start: MENU FIRST, no PDF auto-load
-    const startItem =
-      document.querySelector('.menuItem[aria-selected="true"]') ||
-      menuItems[0];
-
-    setActiveItem(startItem);   // sets download link to the selected tab
-    showStartMessage();         // shows placeholder instead of rendering a PDF
-    openMenu();                 // opens menu overlay immediately
-
-    // Hide header on scroll down / show on scroll up (disabled while menu open)
-    let lastY = window.scrollY;
-    let ticking = false;
-
-    function updateTopBar(){
-      const y = window.scrollY;
-      const delta = y - lastY;
-
-      if (document.body.classList.contains("menu-open")){
-        document.body.classList.remove("top-hidden");
-        lastY = y;
-        ticking = false;
-        return;
-      }
-
-      if (y < 10){
-        document.body.classList.remove("top-hidden");
-        lastY = y;
-        ticking = false;
-        return;
-      }
-
-      if (Math.abs(delta) > 8){
-        if (delta > 0) document.body.classList.add("top-hidden");
-        else document.body.classList.remove("top-hidden");
-        lastY = y;
-      }
-
-      ticking = false;
-    }
-
-    window.addEventListener("scroll", () => {
-      if (!ticking){
-        requestAnimationFrame(updateTopBar);
-        ticking = true;
-      }
-    }, { passive: true });
+    loadPdf("glass-construction-manual.pdf");
   </script>
 </body>
 </html>
-
