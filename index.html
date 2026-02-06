@@ -249,29 +249,33 @@
 
     /* ================= ARTWORK (FULL WIDTH, BOTTOM CROPPED, NO SCROLL) ================= */
 
+    /* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
+    
     .menuArtArea{
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
       
-      height: 55vh;          /* artwork display zone height */
+      height: 60vh;          /* artwork display zone height */
       pointer-events: none;
-      overflow: hidden;      /* crops anything beyond this container */
+      overflow: hidden;      /* crops the bleed areas */
       z-index: 1;
     }
-
+    
     .menuArt{
       position: absolute;
-      left: 0;
-      bottom: 0;             /* anchor to bottom */
+      left: 50%;
+      top: 0;                /* anchor to TOP to keep skull fully visible */
+      transform: translateX(-50%);
       
-      width: 100vw;          /* full viewport width */
-      height: 70vh;          /* taller than container = bottom gets cropped */
+      width: 110vw;          /* 100vw + 5% left + 5% right = 110vw total */
+      height: auto;          /* maintain aspect ratio */
+      min-height: 105%;      /* ensures it bleeds 5% past bottom of container */
       
-      object-fit: cover;     /* scales to cover width, crops height */
-      object-position: center bottom;  /* keeps bottom portion, crops top if needed */
-
+      object-fit: cover;     /* scales to cover the area */
+      object-position: center top;  /* keeps top visible, crops bottom */
+    
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
     }
@@ -354,13 +358,14 @@
       }
 
       /* Mobile art adjustments */
+      
       .menuArtArea{ 
-        height: 50vh;        /* slightly smaller on mobile */
+        height: 55vh;        /* slightly smaller container on mobile */
       }
       .menuArt{
-        width: 100vw;        /* still full width */
-        height: 65vh;        /* slightly less tall on mobile */
-      }
+        width: 110vw;        /* same 5% bleed on mobile */
+        min-height: 105%;    /* same 5% bottom bleed on mobile */
+      }  
     }
   </style>
 </head>
@@ -631,3 +636,4 @@
   </script>
 </body>
 </html>
+
