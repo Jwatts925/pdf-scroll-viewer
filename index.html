@@ -169,7 +169,7 @@
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     const viewer = document.getElementById("viewer");
-    const statusEl = document.getElementById("status");
+    const statusEl = document.getElementById("status") || { textContent: "" };
     const hintEl = document.getElementById("hint");
     const tabs = Array.from(document.querySelectorAll(".tab"));
 
@@ -309,4 +309,5 @@
   </script>
 </body>
 </html>
+
 
