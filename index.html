@@ -40,14 +40,18 @@ header{
   flex-wrap:wrap;
 }
 
-.divider{
-  width: 1px;
-  height: 28px;
-  background: rgba(0,0,0,0.15);
-  align-self: center;
+/* Smooth hide/show of the sticky top bar */
+header,
+#loadingBar{
+  transition: transform 220ms ease;
+  will-change: transform;
 }
 
-  
+body.top-hidden header,
+body.top-hidden #loadingBar{
+  transform: translateY(-120%);
+}
+
 .brand{
   display:flex;
   flex-direction:column;
@@ -62,6 +66,7 @@ header{
   gap:8px;
   align-items:center;
   justify-content:center;
+  flex-wrap:wrap;
 }
 
 .tab{
@@ -73,9 +78,22 @@ header{
   font-size:13px;
   cursor:pointer;
 }
+.tab:hover{
+  box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.18);
+}
 .tab[aria-selected="true"]{
   font-weight:600;
   box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  border-color: rgba(0,0,0,0.22);
+}
+
+/* Divider between last tab and download */
+.divider{
+  width:1px;
+  height:28px;
+  background: rgba(0,0,0,0.15);
+  align-self:center;
 }
 
 /* Download button */
@@ -88,9 +106,11 @@ header{
   cursor:pointer;
   text-decoration:none;
   color:var(--text);
+  white-space:nowrap;
 }
 .download:hover{
   box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  border-color: rgba(0,0,0,0.18);
 }
 
 /* ================= LOADING BAR ================= */
@@ -102,12 +122,15 @@ header{
   width:100%;
   opacity:0;
   transition:opacity 160ms ease;
+  z-index:9;
+  background: transparent;
 }
 #loadingBar.show{ opacity:1; }
 #loadingBarInner{
   height:100%;
   width:0%;
   background:rgba(0,0,0,0.35);
+  border-radius:999px;
   transition:width 180ms ease;
 }
 
@@ -123,7 +146,7 @@ header{
 
 .page{
   width:min(1100px,96vw);
-  background:#fff;
+  background:var(--page-bg);
   border-radius:14px;
   border:1px solid var(--border);
   box-shadow:var(--shadow);
@@ -147,14 +170,24 @@ header{
 /* ================= MOBILE ================= */
 
 @media (max-width:640px){
-  header{ flex-direction:column; gap:10px; }
+  header{
+    flex-direction:column;
+    gap:8px;
+  }
+
+  /* Loading bar sits below taller header on mobile */
   #loadingBar{ top:96px; }
 
-  .divider{
-    display: none;
+  /* Hide the vertical divider when stacked */
+  .divider{ display:none; }
+
+  /* Smaller buttons so tabs + Download fit on one line */
+  .tab,
+  .download{
+    font-size:12px;
+    padding:6px 10px;
   }
 }
-
 </style>
 </head>
 
@@ -166,21 +199,20 @@ header{
     <div class="sub">2021–2026</div>
   </div>
 
-<nav class="tabs">
+  <nav class="tabs" aria-label="Document tabs">
     <button class="tab" aria-selected="true"  data-pdf="resume.pdf">Resume</button>
     <button class="tab" aria-selected="false" data-pdf="portfolio.pdf">Portfolio</button>
     <button class="tab" aria-selected="false" data-pdf="glass-construction-manual.pdf">Glass Manual</button>
-</nav>
+  </nav>
 
-<div class="divider" aria-hidden="true"></div>
+  <div class="divider" aria-hidden="true"></div>
 
-<a id="downloadBtn" class="download" href="resume.pdf" download>
-  Download PDF
-</a>
-
+  <a id="downloadBtn" class="download" href="resume.pdf" download>
+    Download PDF
+  </a>
 </header>
 
-<div id="loadingBar"><div id="loadingBarInner"></div></div>
+<div id="loadingBar" aria-hidden="true"><div id="loadingBarInner"></div></div>
 
 <main id="viewer"></main>
 
@@ -199,79 +231,164 @@ let observer = null;
 let loadToken = 0;
 const TARGET_WIDTH = 1100;
 
-function showLoading(){ loadingBar.classList.add("show"); loadingBarInner.style.width="8%"; }
-function setProgress(p){ loadingBarInner.style.width=Math.min(100,p)+"%"; }
+function showLoading(){
+  loadingBar.classList.add("show");
+  loadingBarInner.style.width = "8%";
+}
+function setProgress(p){
+  loadingBarInner.style.width = Math.max(0, Math.min(100, p)) + "%";
+}
 function hideLoading(){
   setProgress(100);
-  setTimeout(()=>{ loadingBar.classList.remove("show"); loadingBarInner.style.width="0%"; },250);
+  setTimeout(() => {
+    loadingBar.classList.remove("show");
+    loadingBarInner.style.width = "0%";
+  }, 250);
 }
 
 function clearViewer(){
-  viewer.innerHTML="";
-  if(observer){ observer.disconnect(); observer=null; }
+  viewer.innerHTML = "";
+  if(observer){ observer.disconnect(); observer = null; }
 }
 
 function setActive(tab){
-  tabs.forEach(t=>t.setAttribute("aria-selected",t===tab));
+  tabs.forEach(t => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
   downloadBtn.href = tab.dataset.pdf;
 }
 
 async function loadPdf(url){
   const token = ++loadToken;
+
   clearViewer();
   showLoading();
   setProgress(10);
 
-  const task = pdfjsLib.getDocument(url);
-  task.onProgress = p=>{
-    if(p.total) setProgress(10+(p.loaded/p.total)*60);
-  };
+  try{
+    const task = pdfjsLib.getDocument({ url, withCredentials: false });
+    task.onProgress = (p) => {
+      if(p && p.total){
+        setProgress(10 + (p.loaded / p.total) * 60); // 10% -> 70% while downloading
+      }
+    };
 
-  const pdf = await task.promise;
-  if(token!==loadToken) return;
-  setProgress(75);
+    const pdf = await task.promise;
+    if(token !== loadToken) return;
 
-  for(let i=1;i<=pdf.numPages;i++){
-    const shell=document.createElement("div");
-    shell.className="page";
-    shell.dataset.page=i;
-    shell.innerHTML='<div class="skeleton"></div>';
-    viewer.appendChild(shell);
-  }
+    setProgress(75);
 
-  observer=new IntersectionObserver(async entries=>{
-    for(const e of entries){
-      if(!e.isIntersecting) continue;
-      observer.unobserve(e.target);
-      const page=await pdf.getPage(+e.target.dataset.page);
-      const vp1=page.getViewport({scale:1});
-      const scale=TARGET_WIDTH/vp1.width;
-      const vp=page.getViewport({scale});
-      const c=document.createElement("canvas");
-      c.width=vp.width; c.height=vp.height;
-      e.target.innerHTML=""; e.target.appendChild(c);
-      await page.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;
-      setProgress(75+(+e.target.dataset.page/pdf.numPages)*23);
-      if(+e.target.dataset.page===1) hideLoading();
+    // Create page shells immediately for scroll height
+    for(let i = 1; i <= pdf.numPages; i++){
+      const shell = document.createElement("div");
+      shell.className = "page";
+      shell.dataset.page = String(i);
+      shell.innerHTML = '<div class="skeleton"></div>';
+      viewer.appendChild(shell);
     }
-  },{rootMargin:"900px"});
-  document.querySelectorAll(".page").forEach(p=>observer.observe(p));
+
+    observer = new IntersectionObserver(async (entries) => {
+      for(const e of entries){
+        if(!e.isIntersecting) continue;
+        observer.unobserve(e.target);
+
+        // If user switched docs mid-render, stop
+        if(token !== loadToken) return;
+
+        const pageNumber = Number(e.target.dataset.page);
+
+        try{
+          const page = await pdf.getPage(pageNumber);
+          const vp1 = page.getViewport({ scale: 1 });
+          const scale = TARGET_WIDTH / vp1.width;
+          const vp = page.getViewport({ scale });
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.floor(vp.width);
+          canvas.height = Math.floor(vp.height);
+
+          e.target.innerHTML = "";
+          e.target.appendChild(canvas);
+
+          await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp }).promise;
+
+          // 75% -> 98% as pages render
+          setProgress(75 + (pageNumber / pdf.numPages) * 23);
+
+          // Hide once the doc is usable (after page 1 renders)
+          if(pageNumber === 1) hideLoading();
+
+        } catch(err){
+          // Fail gracefully for a single page
+          e.target.innerHTML =
+            '<div style="padding:16px;color:#700;border:1px solid rgba(180,0,0,0.18);background:rgba(255,0,0,0.04);border-radius:12px;margin:10px;">' +
+            'Failed to render page ' + pageNumber + '.</div>';
+          hideLoading();
+        }
+      }
+    }, { rootMargin: "900px 0px" });
+
+    document.querySelectorAll(".page").forEach(p => observer.observe(p));
+
+  } catch(err){
+    hideLoading();
+    viewer.innerHTML =
+      '<div style="max-width:900px;margin:30px auto;padding:16px;border:1px solid rgba(180,0,0,0.18);background:rgba(255,0,0,0.04);border-radius:12px;color:#700;">' +
+      '<strong>Couldn’t load the PDF:</strong> <code>' + url + '</code><br><br>' +
+      '<code>' + String(err) + '</code><br><br>' +
+      'Make sure the PDF is in the same repo folder as <code>index.html</code> and the filename matches exactly.' +
+      '</div>';
+  }
 }
 
-tabs.forEach(tab=>{
-  tab.addEventListener("click",()=>{
+/* Tab click handler */
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
     setActive(tab);
-    window.scrollTo({top:0});
+    window.scrollTo({ top: 0, behavior: "instant" });
     loadPdf(tab.dataset.pdf);
   });
 });
 
-/* Initial load */
-const startTab = document.querySelector('.tab[aria-selected="true"]');
+/* Initial load (whatever tab has aria-selected="true") */
+const startTab = document.querySelector('.tab[aria-selected="true"]') || tabs[0];
 setActive(startTab);
 loadPdf(startTab.dataset.pdf);
+
+/* Hide header on scroll down, show on scroll up (desktop + mobile) */
+let lastY = window.scrollY;
+let ticking = false;
+
+function updateTopBar(){
+  const y = window.scrollY;
+  const delta = y - lastY;
+
+  // Always show near the very top
+  if (y < 10){
+    document.body.classList.remove("top-hidden");
+    lastY = y;
+    ticking = false;
+    return;
+  }
+
+  // Avoid jitter
+  if (Math.abs(delta) > 8){
+    if (delta > 0){
+      document.body.classList.add("top-hidden");   // scrolling down
+    } else {
+      document.body.classList.remove("top-hidden"); // scrolling up
+    }
+    lastY = y;
+  }
+
+  ticking = false;
+}
+
+window.addEventListener("scroll", () => {
+  if (!ticking){
+    window.requestAnimationFrame(updateTopBar);
+    ticking = true;
+  }
+}, { passive: true });
 </script>
 
 </body>
 </html>
-
