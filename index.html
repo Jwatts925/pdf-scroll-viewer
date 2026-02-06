@@ -21,7 +21,7 @@
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
       /* If your artwork is BLACK lines on transparent, keep this ON (default). */
-      --art-filter: brightness(0) invert(1);
+      --art-filter: none;
 
       /* If your artwork is ALREADY WHITE lines on transparent, set this to "none". */
       /* --art-filter: none; */
@@ -449,8 +449,8 @@
 
       <!-- Pinned bottom art band -->
       <div id="menuArtArea" class="menuArtArea" aria-hidden="true">
-        <div class="menuArtMissing">IMAGE NOT FOUND: menu-art.png</div>
-        <img id="menuArt" class="menuArt" src="menu-art.png" alt="">
+        <div class="menuArtMissing">IMAGE NOT FOUND: menu-art.svg</div>
+        <img id="menuArt" class="menuArt" src="menu-art.svg" alt="">
       </div>
     </div>
   </div>
@@ -475,12 +475,12 @@
     const backdrop = overlay.querySelector(".overlayBackdrop");
     const menuItems = Array.from(document.querySelectorAll(".menuItem"));
 
-    // Debug helper: show fallback if menu-art.png fails to load
+    // Debug helper: show fallback if menu-art.svg fails to load
     const menuArt = document.getElementById("menuArt");
     const menuArtArea = document.getElementById("menuArtArea");
     menuArt.addEventListener("error", () => {
       menuArtArea.classList.add("missing");
-      console.warn("menu-art.png failed to load. Check filename + location.");
+      console.warn("menu-art.svg failed to load. Check filename + location.");
     });
 
     let observer = null;
@@ -678,6 +678,7 @@
   </script>
 </body>
 </html>
+
 
 
 
