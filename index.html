@@ -349,37 +349,38 @@
     }
 
     /* Mobile tweaks */
+    /* Mobile art adjustments */
     @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
       #topSpacer{ height: 14px; }
-
+    
       .overlayMenu{
         padding-top: 72px;
         gap: 22px;
       }
-
+    
       .menuItemTitle{
         font-size: clamp(44px, 10vw, 72px);
       }
-
-          
+    
       /* Mobile art adjustments */
       .menuArtArea{ 
-        height: 52vh;        /* slightly taller container */
+        bottom: 15vh;        /* CHANGED: move up from bottom by 15vh */
+        height: 52vh;        
       }
       .menuArt{
         position: absolute;
-        top: 0;              /* CHANGED: anchor to TOP instead of bottom */
+        top: 0;              
         left: 50%;
-        bottom: auto;        /* remove bottom positioning */
+        bottom: auto;        
         transform: translateX(-50%);
         
         width: 110vw;        
-        height: 57vh;        /* height that fills container + bleeds bottom */
+        height: 57vh;        
         
         object-fit: cover;
-        object-position: center top;  /* CHANGED: keep TOP visible, crop bottom */
+        object-position: center top;
       }
     }
   </style>
@@ -651,6 +652,7 @@
   </script>
 </body>
 </html>
+
 
 
 
