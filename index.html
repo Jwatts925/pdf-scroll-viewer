@@ -18,7 +18,6 @@
       --text: #111;
       --muted: rgba(0,0,0,0.55);
       --border: rgba(0,0,0,0.10);
-
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     }
 
@@ -29,7 +28,7 @@
       font-family: var(--font);
     }
 
-    /* ================= HEADER (DESKTOP DEFAULT) ================= */
+    /* ================= HEADER ================= */
 
     header{
       position: sticky;
@@ -185,6 +184,7 @@
 
     /* ================= PDF VIEWER ================= */
 
+    /* Default (single column) */
     #viewer{
       display:flex;
       flex-direction:column;
@@ -218,6 +218,25 @@
     @keyframes shimmer{
       0%{ background-position: 200% 0; }
       100%{ background-position: -200% 0; }
+    }
+
+    /* ================= DESKTOP "SPREAD" MODE (Glass Manual only) =================
+       Two pages side-by-side, continuous scroll. Not applied on mobile.
+    */
+    @media (min-width: 641px){
+      body.spread #viewer{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--page-gap);
+        align-items:start;
+        justify-content:center;
+        width: min(1100px, 96vw);
+        margin: 0 auto;
+      }
+
+      body.spread .page{
+        width: 100%;
+      }
     }
 
     /* ================= MOBILE ONLY ================= */
@@ -313,9 +332,14 @@
     const loadingBar = document.getElementById("loadingBar");
     const loadingBarInner = document.getElementById("loadingBarInner");
 
+    const GLASS_MANUAL = "glass-construction-manual.pdf";
+
     let observer = null;
     let loadToken = 0;
-    const TARGET_WIDTH = 1100;
+
+    function isDesktop(){
+      return window.matchMedia("(min-width: 641px)").matches;
+    }
 
     function showLoading(){
       loadingBar.classList.add("show");
@@ -341,6 +365,12 @@
       }
     }
 
+    function applySpreadModeFor(url){
+      // Spread mode only for Glass Manual AND only on desktop
+      const enable = (url === GLASS_MANUAL) && isDesktop();
+      document.body.classList.toggle("spread", enable);
+    }
+
     function setActive(tab){
       tabs.forEach(t => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
       downloadBtn.href = tab.dataset.pdf;
@@ -354,27 +384,38 @@
       return wrap;
     }
 
+    function getTargetWidthPx(container){
+      // Render to the actual container width for crisp output.
+      // In spread mode the container is half-width column; otherwise it's full page width.
+      const w = Math.floor(container.getBoundingClientRect().width);
+      return Math.max(320, w); // safety clamp
+    }
+
     async function renderPage(pdf, pageNumber, container){
       const page = await pdf.getPage(pageNumber);
-      const vp1 = page.getViewport({ scale: 1 });
-      const scale = TARGET_WIDTH / vp1.width;
-      const vp = page.getViewport({ scale });
+
+      // Compute scale from the container width
+      const viewport1 = page.getViewport({ scale: 1 });
+      const targetWidth = getTargetWidthPx(container);
+      const scale = targetWidth / viewport1.width;
+      const viewport = page.getViewport({ scale });
 
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d", { alpha: false });
 
-      canvas.width = Math.floor(vp.width);
-      canvas.height = Math.floor(vp.height);
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
 
       container.innerHTML = "";
       container.appendChild(canvas);
 
-      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      await page.render({ canvasContext: ctx, viewport }).promise;
     }
 
     async function loadPdf(url){
       const token = ++loadToken;
 
+      applySpreadModeFor(url);
       clearViewer();
       showLoading();
       setProgress(10);
@@ -392,6 +433,7 @@
 
         setProgress(75);
 
+        // Create shells first (so we know exact column widths for spread mode)
         for (let i = 1; i <= pdf.numPages; i++){
           viewer.appendChild(makeShell(i));
         }
@@ -404,11 +446,9 @@
             if (token !== loadToken) return;
 
             const pageNumber = Number(entry.target.dataset.page);
-
             await renderPage(pdf, pageNumber, entry.target);
 
             setProgress(75 + (pageNumber / pdf.numPages) * 23);
-
             if (pageNumber === 1) hideLoading();
           }
         }, { rootMargin: "900px 0px" });
@@ -470,6 +510,21 @@
         ticking = true;
       }
     }, { passive: true });
+
+    // If the user rotates / resizes on Glass Manual desktop, re-render at correct width
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const selected = document.querySelector('.tab[aria-selected="true"]');
+        if (!selected) return;
+        const url = selected.dataset.pdf;
+        // Reload only if spread mode could change (Glass Manual) or desktop/mobile boundary changes
+        if (url === GLASS_MANUAL){
+          loadPdf(url);
+        }
+      }, 200);
+    });
   </script>
 </body>
 </html>
