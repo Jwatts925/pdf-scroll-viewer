@@ -28,9 +28,11 @@
       font-family: var(--font);
     }
 
-    /* Lock page scroll when menu is open */
+    /* Lock scroll when menu is open (desktop + mobile) */
     body.menu-open{
       overflow: hidden;
+      height: 100vh;
+      touch-action: none;
     }
 
     /* ================= HEADER ================= */
@@ -183,10 +185,11 @@
       z-index: 999;
       display:none;
 
-      background: #000;
-      backdrop-filter: none;
+      background: #000;          /* black menu */
       opacity: 1;
-      overflow: hidden;  /* prevents scrolling in overlay */
+
+      /* extra lock safety */
+      overflow: hidden;
     }
     body.menu-open .overlay{ display:block; }
 
@@ -206,9 +209,6 @@
       display:flex;
       flex-direction:column;
       gap: 28px;
-
-      height: 100vh;
-      overflow: hidden;  /* no scrolling */
     }
 
     .menuItem{
@@ -222,7 +222,8 @@
       color: #fff;
       display:inline-block;
       width: 100%;
-      z-index: 2;
+      position: relative;
+      z-index: 2; /* keep text above art */
     }
 
     .menuItemTitle{
@@ -234,7 +235,6 @@
       transition: transform 160ms ease, font-weight 160ms ease, opacity 160ms ease;
     }
 
-    /* "Scale + weight pop" (no underline) */
     .menuItem:hover .menuItemTitle{
       transform: scale(1.04);
       opacity: 0.98;
@@ -246,48 +246,51 @@
       opacity: 1;
     }
 
-    /* ================= ARTWORK (FULL WIDTH BLEED, FIXED TO VIEWPORT) ================= */
+    /* ================= ARTWORK =================
+       Goal:
+       - NO crop at the top of the artwork (show top of image)
+       - Bleed off left/right/bottom
+       - On very tall screens, keep it from rising into the menu text
+    */
 
-      /* LOCK SCROLL WHEN MENU IS OPEN */
-      body.menu-open{
-        overflow: hidden;
-        height: 100vh;
-      }
-      
-      /* make sure the overlay itself can't scroll */
-      .overlay{
-        overflow: hidden;
-      }
-      
-      /* ARTWORK pinned to viewport bottom, no crop */
-      .menuArtArea{
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      
-        height: 0;              /* no box to crop it */
-        pointer-events: none;
-        z-index: 0;             /* behind the menu text */
-      }
-      
-      .menuArt{
-        position: absolute;
-        left: 50%;
-        bottom: -55vh;          /* bleed past bottom (adjust this) */
-        transform: translateX(-50%);
-      
-        width: 140vw;           /* bleed past left/right (adjust this) */
-        height: auto;           /* ✅ prevents cropping */
-        max-width: none;
-      
-        object-fit: contain;    /* ✅ contain = no crop */
-        object-position: center;
-      
-        filter: brightness(0) invert(1);
-        -webkit-filter: brightness(0) invert(1);
-      }
+    .menuArtArea{
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
 
+      /* This spacing is the key: taller screens get more gap so art doesn't invade text */
+      margin-top: clamp(18px, 6vh, 140px);
+
+      /* Give the art a "zone" so it starts below text */
+      height: clamp(34vh, 40vh, 52vh);
+
+      position: relative;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .menuArt{
+      position: absolute;
+      left: 50%;
+
+      /* Anchor to bottom so it bleeds DOWN (and won't climb up as badly) */
+      bottom: -10vh; /* adjust if you want more/less bottom cut */
+
+      /* centered */
+      transform: translateX(-50%);
+
+      /* make it wider than screen so it bleeds left/right */
+      width: 160vw;
+
+      /* big enough to spill below, but capped so it doesn't dominate tall screens */
+      height: clamp(55vh, 75vh, 85vh);
+
+      object-fit: contain;        /* IMPORTANT: avoids cropping the top */
+      object-position: top center;/* top stays as-is */
+
+      /* If your file is already WHITE lines on transparent, keep this OFF */
+      filter: none;
+      -webkit-filter: none;
+    }
 
     /* ================= LOADING BAR ================= */
 
@@ -366,25 +369,15 @@
         font-size: clamp(44px, 10vw, 72px);
       }
 
-      /* Mobile art adjustments - positioned lower, shows full top, bleeds off bottom */
-      .menuArtArea{ 
-        top: auto;           /* remove any top positioning */
-        bottom: 15vh;       /* push down so it bleeds off bottom of screen */
-        height: 60vh;        /* taller container */
-        overflow: visible;   /* allow bleed past bottom */
+      /* Mobile: scoot art UP a bit, keep it smaller, still bleeding */
+      .menuArtArea{
+        margin-top: 18px;   /* tighter like your “tabs start” look */
+        height: 46vh;       /* smaller zone so it doesn't fall too low */
       }
       .menuArt{
-        position: absolute;
-        top: 0;              /* anchor to TOP of container to show full top */
-        left: 50%;
-        bottom: auto;        /* remove bottom positioning */
-        transform: translateX(-50%);
-        
-        width: 110vw;        /* 5% bleed on sides */
-        height: 65vh;        /* tall enough to extend past bottom */
-        
-        object-fit: cover;
-        object-position: center top;  /* prioritize showing the top */
+        bottom: 10vh;       /* less downward push than desktop */
+        width: 165vw;       /* still wide */
+        height: 72vh;       /* slightly smaller */
       }
     }
   </style>
@@ -400,6 +393,7 @@
 
       <div class="divider" aria-hidden="true"></div>
 
+      <!-- Start as Glass Manual -->
       <a id="downloadBtn" class="download" href="glass-construction-manual.pdf" download>Download PDF</a>
     </div>
 
@@ -429,7 +423,7 @@
         <div class="menuItemTitle">Glass Manual</div>
       </button>
 
-      <!-- Artwork area -->
+      <!-- Artwork -->
       <div class="menuArtArea" aria-hidden="true">
         <img class="menuArt" src="menu-art.png" alt="">
       </div>
@@ -561,7 +555,7 @@
         hideLoading();
         viewer.innerHTML = `
           <div style="max-width:900px;margin:30px auto;padding:16px;border:1px solid rgba(180,0,0,0.18);background:rgba(255,0,0,0.04);border-radius:12px;color:#700;">
-            <strong>Couldn't load the PDF:</strong> <code>${url}</code><br><br>
+            <strong>Couldn’t load the PDF:</strong> <code>${url}</code><br><br>
             <code>${String(err)}</code>
           </div>
         `;
@@ -654,15 +648,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
