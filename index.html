@@ -28,11 +28,6 @@
       font-family: var(--font);
     }
 
-    /* Lock page scroll when menu is open (prevents giant scrollbars) */
-    body.menu-open{
-      overflow: hidden;
-    }
-
     /* ================= HEADER ================= */
 
     header{
@@ -186,8 +181,6 @@
       background: #000;
       backdrop-filter: none;
       opacity: 1;
-
-      overflow: hidden; /* prevents scrollbars */
     }
     body.menu-open .overlay{ display:block; }
 
@@ -207,9 +200,6 @@
       display:flex;
       flex-direction:column;
       gap: 28px;
-
-      height: 100vh;
-      overflow: hidden;   /* no scrolling in menu */
     }
 
     .menuItem{
@@ -223,7 +213,6 @@
       color: #fff;
       display:inline-block;
       width: 100%;
-      z-index: 2;
     }
 
     .menuItemTitle{
@@ -235,7 +224,7 @@
       transition: transform 160ms ease, font-weight 160ms ease, opacity 160ms ease;
     }
 
-    /* "Scale + weight pop" (no underline) */
+    /* “Scale + weight pop” (no underline) */
     .menuItem:hover .menuItemTitle{
       transform: scale(1.04);
       opacity: 0.98;
@@ -247,43 +236,37 @@
       opacity: 1;
     }
 
-    /* ================= ARTWORK (FULL WIDTH, BOTTOM CROPPED, NO SCROLL) ================= */
+    /* ================= ARTWORK (FULL BLEED, NO FADE, TOP NOT CUT, BOTTOM SPILLS) ================= */
 
-    /* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
-    
-/* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
-
-    /* ================= ARTWORK (FULL TOP VISIBLE, BLEEDS 5% ON SIDES & BOTTOM) ================= */
-
-/* ================= ARTWORK (BREAKS OUT OF CONTAINER, FULL WIDTH BLEED) ================= */
-
+    /* Put your file in the SAME folder as index.html.
+       Name it exactly: menu-art.png (or change the filename below). */
     .menuArtArea{
-      position: fixed;       /* CHANGED: fixed to viewport, not parent container */
-      left: 0;
-      right: 0;
-      bottom: 0;
-      
-      width: 100vw;          /* ADDED: explicit full viewport width */
-      height: 55vh;          
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-top: 18px;
+
+      height: 62vh;
+      overflow: visible;
+      position: relative;
       pointer-events: none;
-      overflow: hidden;      /* crop the bottom bleed */
-      z-index: 1;
     }
-    
+
     .menuArt{
       position: absolute;
       left: 50%;
-      bottom: -20%;           /* bleed 5% past bottom */
+      top: 0;
       transform: translateX(-50%);
-      
-      width: 110vw;          /* 5% bleed on each side */
-      height: 60vh;          
-      
-      object-fit: cover;     
-      object-position: center bottom;
-    
+
+      width: 120vw;
+      height: 85vh;
+      object-fit: cover;
+      object-position: top center;
+
       filter: brightness(0) invert(1);
       -webkit-filter: brightness(0) invert(1);
+
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
     }
 
     /* ================= LOADING BAR ================= */
@@ -349,38 +332,25 @@
     }
 
     /* Mobile tweaks */
-    /* Mobile art adjustments */
     @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
       #topSpacer{ height: 14px; }
-    
+
       .overlayMenu{
         padding-top: 72px;
         gap: 22px;
       }
-    
+
       .menuItemTitle{
         font-size: clamp(44px, 10vw, 72px);
       }
-    
-      /* Mobile art adjustments */
-      .menuArtArea{ 
-        bottom: 15vh;        /* CHANGED: move up from bottom by 15vh */
-        height: 52vh;        
-      }
+
+      /* Slightly smaller artwork on mobile (same effect: top visible, bottom spills) */
+      .menuArtArea{ height: 64vh; }     /* was 70vh-ish earlier */
       .menuArt{
-        position: absolute;
-        top: 0;              
-        left: 50%;
-        bottom: auto;        
-        transform: translateX(-50%);
-        
-        width: 110vw;        
-        height: 57vh;        
-        
-        object-fit: cover;
-        object-position: center top;
+        width: 130vw;                   /* was 140vw */
+        height: 88vh;                   /* was 95vh */
       }
     }
   </style>
@@ -427,7 +397,7 @@
         <div class="menuItemTitle">Glass Manual</div>
       </button>
 
-      <!-- Artwork (full width, bottom cropped) -->
+      <!-- Artwork -->
       <div class="menuArtArea" aria-hidden="true">
         <img class="menuArt" src="menu-art.png" alt="">
       </div>
@@ -559,7 +529,7 @@
         hideLoading();
         viewer.innerHTML = `
           <div style="max-width:900px;margin:30px auto;padding:16px;border:1px solid rgba(180,0,0,0.18);background:rgba(255,0,0,0.04);border-radius:12px;color:#700;">
-            <strong>Couldn't load the PDF:</strong> <code>${url}</code><br><br>
+            <strong>Couldn’t load the PDF:</strong> <code>${url}</code><br><br>
             <code>${String(err)}</code>
           </div>
         `;
@@ -652,10 +622,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
