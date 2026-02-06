@@ -28,8 +28,6 @@
       font-family: var(--font);
     }
 
-    /* ================= HEADER ================= */
-
     header{
       position: sticky;
       top: 0;
@@ -56,7 +54,6 @@
       transform: translateY(-120%);
     }
 
-    /* Left cluster: Brand + divider + Download */
     .left{
       display:flex;
       align-items:baseline;
@@ -75,7 +72,7 @@
     .brand .title{
       font-weight:700;
       font-size:16px;
-      letter-spacing: 2px; /* noticeable kerning */
+      letter-spacing: 2px; /* title kerning */
     }
     .brand .sub{
       font-size:12px;
@@ -117,7 +114,6 @@
       outline: none;
     }
 
-    /* Right: menu button (NO circle) */
     .right{
       display:flex;
       align-items:center;
@@ -128,8 +124,8 @@
     .menuBtn{
       appearance:none;
       background: transparent;
-      border: none;          /* no circle */
-      border-radius: 0;      /* no circle */
+      border: none;
+      border-radius: 0;
       width: 34px;
       height: 28px;
       display:inline-flex;
@@ -138,9 +134,7 @@
       cursor:pointer;
       padding:0;
     }
-    .menuBtn:hover{
-      opacity: 0.7;
-    }
+    .menuBtn:hover{ opacity: 0.7; }
 
     .menuIcon{
       position: relative;
@@ -160,17 +154,9 @@
     .menuIcon span:nth-child(2){ top: 7px; }
     .menuIcon span:nth-child(3){ top: 13px; }
 
-    body.menu-open .menuIcon span:nth-child(1){
-      top: 7px;
-      transform: rotate(45deg);
-    }
-    body.menu-open .menuIcon span:nth-child(2){
-      opacity: 0;
-    }
-    body.menu-open .menuIcon span:nth-child(3){
-      top: 7px;
-      transform: rotate(-45deg);
-    }
+    body.menu-open .menuIcon span:nth-child(1){ top: 7px; transform: rotate(45deg); }
+    body.menu-open .menuIcon span:nth-child(2){ opacity: 0; }
+    body.menu-open .menuIcon span:nth-child(3){ top: 7px; transform: rotate(-45deg); }
 
     /* ================= FULLSCREEN OVERLAY (BIG MENU) ================= */
 
@@ -199,9 +185,10 @@
       padding: 90px 0 40px;
       display:flex;
       flex-direction:column;
-      gap: 28px; /* more spacing */
+      gap: 28px;
     }
 
+    /* Apply spacing at the BUTTON LEVEL too (guarantees you see it) */
     .menuItem{
       appearance:none;
       border:none;
@@ -212,13 +199,16 @@
 
       font-family: var(--font);
       color: var(--text);
+
+      letter-spacing: 3px; /* GUARANTEED-visible menu spacing */
     }
 
     .menuItemTitle{
       font-weight: 700;
-      font-size: clamp(52px, 7.5vw, 96px); /* big */
+      font-size: clamp(52px, 7.5vw, 96px);
       line-height: 1.02;
-      letter-spacing: 2px; /* noticeable kerning */
+
+      letter-spacing: 3px; /* keep it here too */
     }
 
     .menuItem:hover .menuItemTitle{
@@ -255,7 +245,6 @@
       transition: width 180ms ease;
     }
 
-    /* ================= SPACER ================= */
     #topSpacer{ height: 18px; }
 
     /* ================= PDF VIEWER ================= */
@@ -295,7 +284,6 @@
       100%{ background-position: -200% 0; }
     }
 
-    /* Mobile tweaks */
     @media (max-width: 640px){
       .brand .title{ font-size: 15px; }
       .download{ font-size: 12px; }
@@ -308,7 +296,10 @@
 
       .menuItemTitle{
         font-size: clamp(44px, 10vw, 72px);
-        letter-spacing: 2px; /* keep kerning on mobile */
+        letter-spacing: 3px;
+      }
+      .menuItem{
+        letter-spacing: 3px;
       }
     }
   </style>
@@ -336,7 +327,6 @@
     </div>
   </header>
 
-  <!-- Full-screen overlay menu -->
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Document menu">
     <div class="overlayBackdrop" aria-hidden="true"></div>
 
@@ -486,8 +476,6 @@
       }
     }
 
-    /* ================= MENU OPEN/CLOSE ================= */
-
     function openMenu(){
       document.body.classList.add("menu-open");
       menuBtn.setAttribute("aria-expanded", "true");
@@ -522,13 +510,10 @@
       });
     });
 
-    /* ================= INITIAL LOAD ================= */
-
     const startItem = document.querySelector('.menuItem[aria-selected="true"]') || menuItems[0];
     setActiveItem(startItem);
     loadPdf(startItem.dataset.pdf);
 
-    /* ================= HIDE HEADER ON SCROLL DOWN / SHOW ON SCROLL UP ================= */
     let lastY = window.scrollY;
     let ticking = false;
 
