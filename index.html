@@ -14,7 +14,7 @@
     :root{
       --page-gap: 18px;
 
-      /* REVERTED COLORS (LIGHT THEME) */
+      /* LIGHT THEME */
       --bg: #ffffff;
       --page-bg: #ffffff;
       --text: #111;
@@ -23,7 +23,7 @@
 
       --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
-      /* Keep SVG colors as-is (no override) */
+      /* Keep SVG colors as-is */
       --art-filter: none;
     }
 
@@ -56,7 +56,9 @@
       padding: 12px 14px;
       background: rgba(255,255,255,0.88);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(#ffffff);
+
+      /* PURE WHITE LINE */
+      border-bottom: 1px solid #ffffff;
     }
 
     header,
@@ -240,7 +242,7 @@
       opacity: 0.95;
     }
 
-    /* ✅ FIX: ALWAYS enlarge on hover (selected or not) */
+    /* ALWAYS enlarge on hover (selected or not) */
     .menuItem:hover .menuItemTitle{
       transform: scale(1.06);
       opacity: 1;
@@ -335,6 +337,40 @@
 
     #topSpacer{ height: 18px; }
 
+    /* ================= THE MAN (IMAGE + TEXT) ================= */
+
+    #manContent{
+      display:flex;
+      justify-content:center;
+      padding: 36px 14px 80px;
+      box-sizing: border-box;
+    }
+
+    .manWrap{
+      width: min(900px, 92vw);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 18px;
+    }
+
+    .manPhoto{
+      width: min(420px, 78vw);
+      height: auto;
+      border-radius: 18px;
+      display:block;
+    }
+
+    .manText{
+      font-family: var(--font);
+      font-weight: 700; /* Roboto bold */
+      font-size: 18px;
+      line-height: 1.35;
+      text-align: center;
+      color: var(--text);
+      max-width: 55ch;
+    }
+
     /* ================= PDF VIEWER ================= */
 
     #viewer{
@@ -420,7 +456,8 @@
     <div class="overlayBackdrop" aria-hidden="true"></div>
 
     <div class="overlayMenu" aria-label="Document tabs">
-      <button class="menuItem" aria-selected="false" data-pdf="the-man.pdf">
+      <!-- The Man is now a CUSTOM PAGE, not a PDF -->
+      <button class="menuItem" aria-selected="false" data-page="the-man">
         <div class="menuItemTitle">The Man</div>
       </button>
 
@@ -448,12 +485,23 @@
 
   <main id="viewer"></main>
 
+  <!-- The Man content (image + bold text) -->
+  <section id="manContent" hidden>
+    <div class="manWrap">
+      <!-- CHANGE THIS filename to your PNG filename -->
+      <img class="manPhoto" src="james photo.png" alt="James Watts">
+      <div class="manText">JAMES WATTS</div>
+    </div>
+  </section>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     const viewer = document.getElementById("viewer");
+    const manContent = document.getElementById("manContent");
+
     const downloadBtn = document.getElementById("downloadBtn");
     const loadingBar = document.getElementById("loadingBar");
     const loadingBarInner = document.getElementById("loadingBarInner");
@@ -501,8 +549,13 @@
 
     function setActiveItem(item){
       menuItems.forEach(b => b.setAttribute("aria-selected", b === item ? "true" : "false"));
-      downloadBtn.href = item.dataset.pdf;
-      downloadBtn.setAttribute("download", "");
+
+      // Only set download link for PDF items
+      if (item.dataset.pdf){
+        downloadBtn.href = item.dataset.pdf;
+        downloadBtn.setAttribute("download", "");
+        downloadBtn.textContent = "Download PDF";
+      }
     }
 
     function makeShell(pageNumber){
@@ -533,6 +586,10 @@
 
     async function loadPdf(url){
       const token = ++loadToken;
+
+      // Hide The Man page, show PDF viewer
+      manContent.hidden = true;
+      viewer.style.display = "flex";
 
       clearViewer();
       showLoading();
@@ -583,6 +640,23 @@
       }
     }
 
+    function showMan(){
+      // Stop any pending PDF loads
+      loadToken++;
+
+      // Hide PDF viewer, show The Man content
+      clearViewer();
+      viewer.style.display = "none";
+      manContent.hidden = false;
+
+      // Make download button point to the image (optional)
+      downloadBtn.href = "james photo.png";
+      downloadBtn.removeAttribute("download");
+      downloadBtn.textContent = "Download Image";
+
+      hideLoading();
+    }
+
     function openMenu(){
       document.body.classList.add("menu-open");
       menuBtn.setAttribute("aria-expanded", "true");
@@ -613,7 +687,12 @@
         setActiveItem(item);
         closeMenu();
         window.scrollTo({ top: 0, behavior: "instant" });
-        loadPdf(item.dataset.pdf);
+
+        if (item.dataset.page === "the-man"){
+          showMan();
+        } else {
+          loadPdf(item.dataset.pdf);
+        }
       });
     });
 
@@ -626,7 +705,7 @@
     setActiveItem(startItem);
     loadPdf(startItem.dataset.pdf);
 
-    // ✅ OPEN MENU BY DEFAULT
+    // OPEN MENU BY DEFAULT
     openMenu();
 
     // Hide header on scroll down / show on scroll up (disabled while menu open)
@@ -669,4 +748,3 @@
   </script>
 </body>
 </html>
-
