@@ -339,12 +339,31 @@
 
     /* ================= THE MAN (IMAGE + TEXT) ================= */
 
+    /* ================= THE MAN (IMAGE ONLY) ================= */
+
     #manContent{
       display:flex;
       justify-content:center;
-      padding: 36px 14px 80px;
+    
+      /* pushes the whole block DOWN */
+      padding: 90px 14px 80px;  /* was 36px top */
       box-sizing: border-box;
     }
+    
+    .manWrap{
+      width: min(1200px, 92vw); /* allow more room for a bigger image */
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    
+    .manPhoto{
+      width: min(840px, 92vw);  /* ~2x your old 420px */
+      height: auto;
+      border-radius: 18px;
+      display:block;
+    }
+
 
     .manWrap{
       width: min(900px, 92vw);
@@ -490,7 +509,7 @@
     <div class="manWrap">
       <!-- CHANGE THIS filename to your PNG filename -->
       <img class="manPhoto" src="james photo.png" alt="James Watts">
-      <div class="manText">JAMES WATTS</div>
+      
     </div>
   </section>
 
@@ -748,3 +767,4 @@
   </script>
 </body>
 </html>
+
